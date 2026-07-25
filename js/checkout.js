@@ -2,6 +2,12 @@
  * checkout.js - QR Checkout Flow & Order Management
  */
 
+function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+}
+
 const Checkout = {
     currentTab: 'cart',
     proofFile: null,
@@ -55,13 +61,19 @@ const Checkout = {
     },
 
     goStep3() {
-        const contact = SiteConfig.contact;
         const summary = document.getElementById('orderSummary');
+        const province = document.getElementById('coProvince')?.value.trim();
+        const addressLine = [
+            document.getElementById('coAddress').value,
+            document.getElementById('coCity').value,
+            province
+        ].filter(Boolean).join(', ');
+
         summary.innerHTML = `
-            <div class="flex justify-between"><span class="text-emerald-600/70">Name:</span><span class="text-emerald-900">${document.getElementById('coName').value}</span></div>
-            <div class="flex justify-between"><span class="text-emerald-600/70">Email:</span><span class="text-emerald-900">${document.getElementById('coEmail').value}</span></div>
-            <div class="flex justify-between"><span class="text-emerald-600/70">Phone:</span><span class="text-emerald-900">${document.getElementById('coPhone').value}</span></div>
-            <div class="flex justify-between"><span class="text-emerald-600/70">Address:</span><span class="text-emerald-900">${document.getElementById('coAddress').value}, ${document.getElementById('coCity').value}</span></div>
+            <div class="flex justify-between"><span class="text-emerald-600/70">Name:</span><span class="text-emerald-900">${escapeHtml(document.getElementById('coName').value)}</span></div>
+            <div class="flex justify-between"><span class="text-emerald-600/70">Email:</span><span class="text-emerald-900">${escapeHtml(document.getElementById('coEmail').value)}</span></div>
+            <div class="flex justify-between"><span class="text-emerald-600/70">Phone:</span><span class="text-emerald-900">${escapeHtml(document.getElementById('coPhone').value)}</span></div>
+            <div class="flex justify-between"><span class="text-emerald-600/70">Address:</span><span class="text-emerald-900">${escapeHtml(addressLine)}</span></div>
             <div class="flex justify-between font-bold pt-2 border-t border-emerald-200"><span>Total:</span><span>${AppData.formatNPR(Cart.subtotal)}</span></div>
         `;
         this.goStep(3);
@@ -91,7 +103,11 @@ const Checkout = {
             name: document.getElementById('coName').value,
             email: document.getElementById('coEmail').value,
             phone: document.getElementById('coPhone').value,
-            address: document.getElementById('coAddress').value + ', ' + document.getElementById('coCity').value,
+            address: [
+                document.getElementById('coAddress').value,
+                document.getElementById('coCity').value,
+                document.getElementById('coProvince')?.value.trim()
+            ].filter(Boolean).join(', '),
             timestamp: new Date().toISOString()
         };
 
@@ -102,7 +118,7 @@ const Checkout = {
 
         // Show success
         document.getElementById('orderConfirmId').textContent =
-            `Order ID: ${orderId} | Total: ${AppData.formatNPR(order.totalNPR)} | ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' })}`;
+            `Order ID: ${orderId} | Total: ${AppData.formatNPR(order.total)} | ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' })}`;
 
         for (let i = 1; i <= 3; i++) {
             document.getElementById(`checkoutStep${i}`)?.classList.add('hidden');
@@ -133,8 +149,8 @@ const Checkout = {
                     <span class="font-mono text-xs text-emerald-700">${o.id}</span>
                     <span class="text-[10px] text-emerald-500">${new Date(o.timestamp).toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' })}</span>
                 </div>
-                <div class="text-sm font-semibold text-emerald-900">${AppData.formatNPR(o.totalNPR)}</div>
-                <div class="text-xs text-emerald-600/70 mt-0.5">${o.items.length} item(s) — ${o.items.map(i => i.name).join(', ')}</div>
+                <div class="text-sm font-semibold text-emerald-900">${AppData.formatNPR(o.total)}</div>
+                <div class="text-xs text-emerald-600/70 mt-0.5">${o.items.length} item(s) — ${escapeHtml(o.items.map(i => i.name).join(', '))}</div>
             </div>
         `).join('');
     }

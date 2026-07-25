@@ -67,7 +67,7 @@ const UI = {
                 <div class="text-[9px] text-emerald-700 font-medium">${nprPrice}</div>
                 <div class="flex items-center gap-1 mt-1" onclick="event.stopPropagation()">
                     <select id="weight-${p.id}" class="flex-1 px-1 py-0.5 border border-emerald-200 rounded text-[9px] bg-white outline-none">${p.weights.map(w => `<option value="${w}" ${w === p.defaultWeight ? 'selected' : ''}>${w}</option>`).join('')}</select>
-                    <button onclick="UI.quickAdd(${p.id})" class="px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded hover:bg-emerald-700">Add</button>
+                    <button onclick="UI.quickAdd(${p.id}, event)" class="px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded hover:bg-emerald-700">Add</button>
                 </div>
             </div>
             <!-- Desktop Card -->
@@ -101,7 +101,7 @@ const UI = {
                             <option value="raw">Raw Form</option>
                             <option value="powder">Powder Form</option>
                         </select>
-                        <button onclick="UI.quickAdd(${p.id})" class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-1">
+                        <button onclick="UI.quickAdd(${p.id}, event)" class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-1">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
                         </button>
                     </div>
@@ -110,8 +110,8 @@ const UI = {
         </div>`;
     },
 
-    quickAdd(productId) {
-        event.stopPropagation();
+    quickAdd(productId, evt) {
+        (evt || window.event)?.stopPropagation();
         const p = AppData.getProductById(productId);
         if (!p) return;
         const isMobile = window.innerWidth < 640;

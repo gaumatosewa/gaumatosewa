@@ -77,4 +77,4 @@ Configured in `_headers` file.
 
 - **Blank page:** Check browser console for errors. Ensure all files are uploaded.
 - **Config not loading:** The `/api/config` function only works on Cloudflare. Locally, it falls back to `data/config.json`.
-- **Images not showing:** Verify paths in `data/products.json` match files in `public/images/products/`.
+- **Images not showing:** Verify paths in `data/products.json` match files in `images/products/`.

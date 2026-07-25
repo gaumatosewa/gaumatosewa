@@ -29,14 +29,11 @@ A static e-commerce website for organic products (gau products, bio-fertilizers,
 ├── data/
 │   ├── config.json         # Default site config (name, contacts, etc.)
 │   └── products.json       # All product, category, testimonial data
-├── public/
-│   └── images/
-│       ├── products/       # 15 product images (SVG)
-│       ├── logo.svg
-│       ├── favicon.svg
-│       ├── qr-payment.svg
-│       ├── gau-pattern.svg
-│       └── robots.txt
+├── images/
+│   ├── products/           # 15 product images (JPG)
+│   ├── favicon.svg
+│   ├── qr-payment.svg
+│   └── gau-pattern.svg
 ├── functions/
 │   └── api/
 │       └── config.js       # Cloudflare Pages Function (env var config)
@@ -45,6 +42,7 @@ A static e-commerce website for organic products (gau products, bio-fertilizers,
 ├── .gitignore
 ├── _headers                # Cloudflare Pages cache & security headers
 ├── _redirects              # SPA fallback redirects
+├── robots.txt
 ├── README.md
 └── CLOUDFLARE_DEPLOY.md
 ```
@@ -111,7 +109,7 @@ Edit `data/products.json`. Each product:
 }
 ```
 
-Place the product image in `public/images/products/`.
+Place the product image in `images/products/`.
 
 ## Local Development
 
