@@ -1,0 +1,13 @@
+name = "gaumatosewa2"
+
+[vars]
+SITE_NAME = "GreenEarth Organics"
+SITE_TAGLINE = "Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care."
+SITE_COPYRIGHT = "2025 GreenEarth Organics. All rights reserved. Made with ❤️ for the planet"
+CONTACT_EMAIL = "info@greenearth.com"
+CONTACT_PHONE = "+977-9800000000"
+ADDRESS_CITY = "Kathmandu"
+ADDRESS_PROVINCE = "Bagmati"
+ADDRESS_COUNTRY = "Nepal"
+DEFAULT_CURRENCY = "USD"
+EXCHANGE_RATE_TO_NPR = "133.50"

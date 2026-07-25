@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium organic gau products, bio-fertilizers, and medicinal herbs from Nepal. Sourced sustainably, delivered with care.">
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <title>Loading...</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ECFDF5', 100: '#D1FAE5', 200: '#A7F3D0', 300: '#6EE7B7',
+                            400: '#34D399', 500: '#10B981', 600: '#059669', 700: '#047857',
+                            800: '#065F46', 900: '#064E3B', 950: '#022C22'
+                        },
+                        green: {
+                            50: '#F0FDF4', 100: '#DCFCE7', 200: '#BBF7D0', 300: '#86EFAC',
+                            400: '#4ADE80', 500: '#22C55E', 600: '#16A34A', 700: '#15803D',
+                            800: '#166534', 900: '#14532D', 950: '#052E16'
+                        },
+                        amber: {
+                            50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D',
+                            400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309',
+                            800: '#92400E', 900: '#78350F'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body class="min-h-screen">
+
+    <!-- ========== HEADER ========== -->
+    <header id="header" class="sticky top-0 z-50 backdrop-blur-md bg-white/60 border-b border-emerald-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center animate-breathe">
+                        <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-lg font-bold text-emerald-900" data-config="siteName">Loading...</span>
+                </div>
+
+                <!-- Desktop Search -->
+                <div class="hidden sm:flex items-center bg-emerald-50/60 rounded-lg px-3 py-2 w-40 lg:w-64 border border-emerald-100">
+                    <i data-lucide="search" class="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0"></i>
+                    <input type="text" id="searchInput" placeholder="Search products..." class="bg-transparent text-sm text-emerald-900 placeholder-emerald-400 outline-none w-full" oninput="UI.filterProducts()">
+                </div>
+
+                <!-- Right actions -->
+                <div class="flex items-center gap-2">
+                    <button onclick="UI.toggleMobileSearch()" class="sm:hidden p-2 rounded-lg hover:bg-emerald-50 text-emerald-700">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="UI.openCart()" class="relative p-2 rounded-lg hover:bg-emerald-50 text-emerald-700 transition-colors">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        <span id="cartBadge" class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button onclick="UI.toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-emerald-50 text-emerald-700">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Search Expanded -->
+            <div id="mobileSearch" class="sm:hidden hidden pb-3">
+                <div class="flex items-center bg-emerald-50/60 rounded-lg px-3 py-2 border border-emerald-100">
+                    <i data-lucide="search" class="w-4 h-4 text-emerald-600 mr-2"></i>
+                    <input type="text" id="mobileSearchInput" placeholder="Search products..." class="bg-transparent text-sm text-emerald-900 placeholder-emerald-400 outline-none w-full" oninput="UI.filterProducts()">
+                </div>
+            </div>
+
+            <!-- Category Nav (rendered by JS based on data) -->
+            <nav id="categoryNav" class="flex items-center gap-1 py-2 overflow-x-auto hide-scrollbar">
+                <button onclick="UI.filterByCategory('all')" class="category-btn active shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors" data-category="all">All Products</button>
+                <!-- Additional category buttons rendered by app.js -->
+            </nav>
+        </div>
+    </header>
+
+    <!-- ========== MOBILE MENU ========== -->
+    <div id="mobileMenu" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 overlay" onclick="UI.toggleMobileMenu()"></div>
+        <div class="absolute top-0 right-0 w-72 h-full bg-white shadow-2xl p-6 cart-drawer-open">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="leaf" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <span class="font-bold text-emerald-900" data-config="siteName">Loading</span>
+                </div>
+                <button onclick="UI.toggleMobileMenu()" class="p-2 hover:bg-emerald-50 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5 text-emerald-700"></i>
+                </button>
+            </div>
+            <div class="flex items-center bg-emerald-50 rounded-lg px-3 py-2 mb-4 border border-emerald-100">
+                <i data-lucide="search" class="w-4 h-4 text-emerald-600 mr-2"></i>
+                <input type="text" placeholder="Search products..." class="bg-transparent text-sm outline-none w-full text-emerald-900" oninput="UI.filterProducts()">
+            </div>
+            <div id="mobileMenuLinks" class="flex flex-col gap-2">
+                <!-- Rendered by app.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== EXCHANGE TICKER ========== -->
+    <div class="bg-emerald-50/40 border-b border-emerald-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex items-center justify-between text-emerald-700">
+            <div class="flex items-center gap-1.5 text-[10px] sm:text-xs">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span class="font-medium">1 USD → <span id="exchangeRate">Loading</span> NPR</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-emerald-600">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                <span id="liveTime">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-green-900">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-emerald-400 rounded-full opacity-[0.07] blur-3xl"></div>
+        <div class="absolute bottom-10 right-20 w-96 h-96 bg-green-400 rounded-full opacity-[0.07] blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-400 rounded-full opacity-[0.07] blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-28 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-sm mb-6">
+                <span>🍃</span>
+                <span>100% Organic &amp; Natural</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight mb-4">
+                Nature's Best for<br>
+                <span class="gradient-text">Your Wellness</span> &amp; Soil
+            </h1>
+            <p data-config="tagline" class="text-emerald-200/80 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">Loading...</p>
+            <div class="flex items-center justify-center gap-3 mb-12">
+                <a href="#products" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-900 font-semibold rounded-xl hover:bg-emerald-50 transition-colors text-sm">
+                    Shop Now <span>↓</span>
+                </a>
+                <a href="#categories" class="inline-flex items-center gap-2 px-6 py-3 border border-emerald-400/60 text-emerald-300 font-semibold rounded-xl hover:bg-emerald-400/10 transition-colors text-sm">
+                    Explore Categories
+                </a>
+            </div>
+            <div id="heroTrustBadges" class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
+                <!-- Rendered by app.js from categories data -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FEATURES BAR ========== -->
+    <section class="bg-white border-y border-emerald-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 divide-emerald-100">
+                <div class="flex items-start gap-3 p-5">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="truck" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-emerald-900 text-sm">Free Shipping</div>
+                        <div class="text-emerald-600/70 text-xs mt-0.5">Free delivery on all orders above $50. Fast and reliable nationwide shipping.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-5">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-emerald-900 text-sm">100% Certified Organic</div>
+                        <div class="text-emerald-600/70 text-xs mt-0.5">All products are certified organic and lab-tested for purity and safety.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-5">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="leaf" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-emerald-900 text-sm">Eco-Friendly Packaging</div>
+                        <div class="text-emerald-600/70 text-xs mt-0.5">Biodegradable and recyclable packaging to minimize environmental impact.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-5">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-emerald-900 text-sm">30-Day Returns</div>
+                        <div class="text-emerald-600/70 text-xs mt-0.5">Not satisfied? Return within 30 days for a full refund, no questions asked.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CATEGORY SHOWCASE ========== -->
+    <section id="categories" class="py-12 sm:py-16 lg:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-900 mb-2">Shop by Category</h2>
+                <p class="text-emerald-600/70 text-sm sm:text-base">Browse our carefully curated collections of natural and organic products</p>
+            </div>
+            <div id="categoryShowcase" class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+                <!-- Rendered by app.js from categories data -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== PRODUCT GRID ========== -->
+    <section id="products" class="py-12 sm:py-16 lg:py-20 bg-gray-50/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-8">
+                <h2 id="productTitle" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-900 mb-2">All Products</h2>
+                <p id="productSubtitle" class="text-emerald-600/70 text-sm sm:text-base">Loading products...</p>
+            </div>
+            <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:gap-6 gap-2"></div>
+            <div id="noProducts" class="hidden text-center py-16">
+                <i data-lucide="search-x" class="w-12 h-12 text-emerald-300 mx-auto mb-4"></i>
+                <p class="text-emerald-600/70">No products found. Try a different category or search term.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TESTIMONIALS ========== -->
+    <section id="testimonials" class="py-12 sm:py-16 lg:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-900 mb-2">What Our Customers Say</h2>
+                <p class="text-emerald-600/70 text-sm sm:text-base">Trusted by farmers, practitioners, and gardeners across the country</p>
+            </div>
+            <div id="testimonialGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+                <!-- Rendered by app.js from testimonials data -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="relative overflow-hidden bg-gradient-to-b from-emerald-950 via-emerald-950 to-green-950 text-emerald-50/90">
+        <div class="absolute top-20 right-10 w-64 h-64 bg-emerald-500 rounded-full opacity-[0.05] blur-3xl"></div>
+        <div class="absolute bottom-20 left-20 w-48 h-48 bg-green-500 rounded-full opacity-[0.04] blur-3xl"></div>
+        <div class="absolute top-40 left-1/2 w-56 h-56 bg-teal-500 rounded-full opacity-[0.03] blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8">
+            <!-- Eco Promise Strip -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+                <div class="flex items-center gap-2 text-xs text-emerald-300/70">
+                    <span class="text-base">♻️</span> 100% Biodegradable Packaging
+                </div>
+                <div class="flex items-center gap-2 text-xs text-emerald-300/70">
+                    <span class="text-base">💧</span> Water Conservation Certified
+                </div>
+                <div class="flex items-center gap-2 text-xs text-emerald-300/70">
+                    <span class="text-base">🌱</span> Carbon Neutral Shipping
+                </div>
+                <div class="flex items-center gap-2 text-xs text-emerald-300/70">
+                    <span class="text-base">☀️</span> Solar-Powered Operations
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-emerald-400 to-green-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="leaf" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <span class="font-bold text-white" data-config="siteName">Loading</span>
+                    </div>
+                    <p data-config="tagline" class="text-sm text-emerald-200/60 leading-relaxed mb-4">Loading...</p>
+                    <div class="space-y-2 text-sm text-emerald-200/60">
+                        <div class="flex items-center gap-2"><span>📧</span> <span data-config="contact.email">Loading</span></div>
+                        <div class="flex items-center gap-2"><span>📞</span> <span data-config="contact.phone">Loading</span></div>
+                        <div class="flex items-center gap-2"><span>📍</span> <span data-config="contact.city">Loading</span><span data-config="contact.country">Loading</span></div>
+                    </div>
+                </div>
+                <!-- Products -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">Products</h4>
+                    <ul id="footerProducts" class="space-y-2 text-sm text-emerald-200/60">
+                        <!-- Rendered by app.js -->
+                    </ul>
+                </div>
+                <!-- Company -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">Company</h4>
+                    <ul class="space-y-2 text-sm text-emerald-200/60">
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Our Farm Partners</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">Support</h4>
+                    <ul class="space-y-2 text-sm text-emerald-200/60">
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Returns &amp; Refunds</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-emerald-800/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-emerald-200/50">
+                <p data-config="copyright">Loading...</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-emerald-300 transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-emerald-300 transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========== PRODUCT DETAIL MODAL ========== -->
+    <div id="productModal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 overlay" onclick="UI.closeProductModal()"></div>
+        <div class="absolute inset-2 sm:inset-4 md:inset-8 lg:inset-12 xl:inset-16 bg-white rounded-2xl overflow-hidden modal-content shadow-2xl">
+            <button onclick="UI.closeProductModal()" class="absolute top-4 right-4 z-10 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5 text-emerald-900"></i>
+            </button>
+            <div class="h-full overflow-y-auto">
+                <div class="relative h-48 sm:h-64 md:h-80 lg:h-96 bg-emerald-900 overflow-hidden">
+                    <video id="modalVideo" class="w-full h-full object-cover" muted loop playsinline></video>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 flex items-center gap-2">
+                        <button onclick="UI.toggleVideo()" class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+                            <i data-lucide="play" id="videoPlayIcon" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="UI.replayVideo()" class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="modalCategoryBadge" class="absolute bottom-4 right-4 px-3 py-1 rounded-full text-xs font-medium"></div>
+                    <div class="absolute top-4 right-14 flex flex-col gap-2">
+                        <span id="modalDiscountBadge" class="hidden px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full"></span>
+                        <span id="modalFeaturedBadge" class="hidden px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">★ Featured</span>
+                    </div>
+                </div>
+                <div class="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto">
+                    <h2 id="modalTitle" class="text-xl sm:text-2xl font-bold text-emerald-900 mb-2"></h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex items-center gap-0.5" id="modalStars"></div>
+                        <span id="modalReviewCount" class="text-sm text-emerald-600/70"></span>
+                        <span class="text-emerald-500 text-sm">✓ In Stock</span>
+                    </div>
+                    <div class="flex items-baseline gap-3 mb-2">
+                        <span id="modalPrice" class="text-2xl font-bold text-emerald-900"></span>
+                        <span id="modalComparePrice" class="text-lg text-emerald-600/50 line-through hidden"></span>
+                    </div>
+                    <div id="modalNPRPrice" class="text-sm text-emerald-700 mb-4"></div>
+                    <p class="text-xs text-emerald-500/70 mb-4" id="modalRateNote"></p>
+                    <div id="modalUnitBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium mb-4"></div>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div>
+                            <label class="text-xs font-medium text-emerald-700 mb-1 block">Weight</label>
+                            <select id="modalWeight" class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm bg-white text-emerald-900 outline-none focus:border-emerald-500" onchange="UI.updateModalPrice()"></select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-emerald-700 mb-1 block">Form</label>
+                            <select id="modalForm" class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm bg-white text-emerald-900 outline-none focus:border-emerald-500">
+                                <option value="raw">Raw Form</option>
+                                <option value="powder">Powder Form</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p id="modalDescription" class="text-sm text-emerald-900/70 leading-relaxed mb-6"></p>
+                    <button onclick="UI.addFromModal()" class="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors text-sm flex items-center justify-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CART DRAWER ========== -->
+    <div id="cartDrawer" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 overlay" onclick="UI.closeCart()"></div>
+        <div class="absolute top-0 right-0 h-full w-full sm:max-w-md bg-white shadow-2xl flex flex-col cart-drawer-open">
+            <div class="flex items-center justify-between p-4 border-b border-emerald-100">
+                <h3 class="font-bold text-emerald-900">Shopping Cart</h3>
+                <button onclick="UI.closeCart()" class="p-2 hover:bg-emerald-50 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5 text-emerald-700"></i>
+                </button>
+            </div>
+            <div class="flex border-b border-emerald-100">
+                <button onclick="Checkout.switchTab('cart')" class="cart-tab flex-1 py-3 text-sm font-medium text-emerald-600 border-b-2 border-emerald-600" data-tab="cart">Cart</button>
+                <button onclick="Checkout.switchTab('checkout')" class="cart-tab flex-1 py-3 text-sm font-medium text-emerald-400 border-b-2 border-transparent" data-tab="checkout">Checkout</button>
+                <button onclick="Checkout.switchTab('orders')" class="cart-tab flex-1 py-3 text-sm font-medium text-emerald-400 border-b-2 border-transparent" data-tab="orders">Orders</button>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <!-- Cart Tab -->
+                <div id="cartTabContent" class="p-4">
+                    <div id="cartEmpty" class="text-center py-12">
+                        <i data-lucide="shopping-bag" class="w-12 h-12 text-emerald-200 mx-auto mb-3"></i>
+                        <p class="text-emerald-600/70 text-sm font-medium">Your cart is empty</p>
+                        <p class="text-emerald-400 text-xs mt-1">Add some products to get started</p>
+                    </div>
+                    <div id="cartItems" class="space-y-3"></div>
+                    <div id="cartSummary" class="hidden mt-4 pt-4 border-t border-emerald-100">
+                        <div class="flex justify-between text-sm text-emerald-600/70 mb-1">
+                            <span>Subtotal</span><span id="cartSubtotal"></span>
+                        </div>
+                        <div class="flex justify-between text-sm text-emerald-600/70 mb-2">
+                            <span>Shipping</span><span class="text-emerald-600">Free</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-emerald-900 pt-2 border-t border-emerald-100">
+                            <span>Total</span><span id="cartTotal"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Checkout Tab -->
+                <div id="checkoutTabContent" class="p-4 hidden">
+                    <div id="checkoutStep1">
+                        <h4 class="font-semibold text-emerald-900 text-sm mb-4">Your Details</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs font-medium text-emerald-700 mb-1 block">Full Name</label>
+                                <input type="text" id="coName" class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm outline-none focus:border-emerald-500" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-emerald-700 mb-1 block">Email</label>
+                                <input type="email" id="coEmail" class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm outline-none focus:border-emerald-500" placeholder="john@example.com">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-emerald-700 mb-1 block">Phone</label>
+                                <input type="text" id="coPhone" class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm outline-none focus:border-emerald-500" placeholder="+977 98XXXXXXXX">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-emerald-700 mb-1 block">Delivery Address</label>
+                                <input type="text" id="coAddress" class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm outline-none focus:border-emerald-500" placeholder="Street Address">
+                                <div class="grid grid-cols-2 gap-2 mt-2">
+                                    <input type="text" id="coCity" class="px-3 py-2 border border-emerald-200 rounded-lg text-sm outline-none focus:border-emerald-500" placeholder="City">
+                                    <input type="text" id="coProvince" class="px-3 py-2 border border-emerald-200 rounded-lg text-sm outline-none focus:border-emerald-500" placeholder="Province">
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="Checkout.goStep2()" class="w-full mt-4 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors text-sm">Continue to Payment</button>
+                    </div>
+                    <div id="checkoutStep2" class="hidden">
+                        <h4 class="font-semibold text-emerald-900 text-sm mb-4">Scan &amp; Pay</h4>
+                        <div class="border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center mb-4">
+                            <img src="/images/qr-payment.svg" alt="QR Payment" class="w-48 h-48 mx-auto mb-3">
+                            <p class="font-semibold text-emerald-900 text-sm">Scan QR Code to Pay</p>
+                            <p class="text-emerald-600/70 text-xs mt-1">Open any banking app (eSewa, Khalti, IME Pay) and scan</p>
+                        </div>
+                        <div class="bg-emerald-50 rounded-xl p-4 mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-emerald-600/70">Amount</span>
+                                <span id="checkoutNPR" class="font-bold text-emerald-900"></span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-emerald-600/70">USD Equivalent</span>
+                                <span id="checkoutUSD" class="text-emerald-700"></span>
+                            </div>
+                            <div class="text-xs text-emerald-500 mt-2">Merchant: <span data-config="siteName">Loading</span></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="Checkout.goStep(1)" class="flex-1 py-2.5 border border-emerald-200 text-emerald-700 font-medium rounded-xl text-sm hover:bg-emerald-50">Back</button>
+                            <button onclick="Checkout.goStep3()" class="flex-1 py-2.5 bg-emerald-600 text-white font-medium rounded-xl text-sm hover:bg-emerald-700">I've Paid</button>
+                        </div>
+                    </div>
+                    <div id="checkoutStep3" class="hidden">
+                        <h4 class="font-semibold text-emerald-900 text-sm mb-4">Upload Payment Proof</h4>
+                        <div id="orderSummary" class="bg-emerald-50 rounded-xl p-4 mb-4 text-sm space-y-1"></div>
+                        <div class="border-2 border-dashed border-emerald-300 rounded-xl p-8 text-center mb-4 cursor-pointer hover:bg-emerald-50/50 transition-colors" onclick="document.getElementById('proofUpload').click()">
+                            <i data-lucide="upload" class="w-8 h-8 text-emerald-400 mx-auto mb-2"></i>
+                            <p class="text-sm text-emerald-700 font-medium">Upload Screenshot</p>
+                            <p class="text-xs text-emerald-500 mt-1">JPG/PNG up to 5 MB</p>
+                            <input type="file" id="proofUpload" accept="image/*" capture="environment" class="hidden" onchange="Checkout.handleProofUpload(this)">
+                            <p id="proofFileName" class="text-xs text-emerald-600 mt-2 hidden"></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="Checkout.goStep(2)" class="flex-1 py-2.5 border border-emerald-200 text-emerald-700 font-medium rounded-xl text-sm hover:bg-emerald-50">Back</button>
+                            <button onclick="Checkout.submitOrder()" class="flex-1 py-2.5 bg-emerald-600 text-white font-medium rounded-xl text-sm hover:bg-emerald-700">Submit Order</button>
+                        </div>
+                    </div>
+                    <div id="checkoutSuccess" class="hidden text-center py-12">
+                        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="check" class="w-8 h-8 text-emerald-600"></i>
+                        </div>
+                        <h4 class="font-bold text-emerald-900 text-lg mb-2">Order Submitted!</h4>
+                        <p class="text-sm text-emerald-600/70 mb-2">Your order has been received. We'll process it once payment is verified.</p>
+                        <p id="orderConfirmId" class="text-sm font-mono text-emerald-700"></p>
+                    </div>
+                </div>
+                <!-- Orders Tab -->
+                <div id="ordersTabContent" class="p-4 hidden">
+                    <div id="ordersEmpty" class="text-center py-12">
+                        <i data-lucide="package" class="w-12 h-12 text-emerald-200 mx-auto mb-3"></i>
+                        <p class="text-emerald-600/70 text-sm font-medium">No orders yet</p>
+                    </div>
+                    <div id="ordersList" class="space-y-3"></div>
+                </div>
+            </div>
+            <!-- Cart Footer -->
+            <div id="cartFooter" class="p-4 border-t border-emerald-100 space-y-2">
+                <button onclick="Checkout.goToCheckout()" class="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors text-sm flex items-center justify-center gap-2">
+                    Proceed to QR Payment
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="Cart.clear()" class="flex-1 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">Clear Cart</button>
+                    <button onclick="Checkout.switchTab('orders')" class="flex-1 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">Orders</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TOAST CONTAINER ========== -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-[80] space-y-2"></div>
+
+    <!-- ========== SCRIPTS (order matters) ========== -->
+    <script src="/js/config.js"></script>
+    <script src="/js/data.js"></script>
+    <script src="/js/cart.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/checkout.js"></script>
+    <script src="/js/app.js"></script>
+
+</body>
+</html>

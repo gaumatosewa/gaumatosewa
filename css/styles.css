@@ -1,0 +1,183 @@
+/* ==============================================
+   GreenEarth Organics - Custom Styles
+   ============================================== */
+
+/* === Base === */
+* {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: #FEFEFE;
+    color: #1A2B2D;
+    background-image: url('../images/gau-pattern.svg');
+    background-repeat: repeat;
+    background-size: 160px 140px;
+}
+
+/* === Custom Scrollbar === */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #A7F3D0;
+    border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #6EE7B7;
+}
+
+/* === Hide Scrollbar (category nav) === */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* === Animations === */
+@keyframes breathe {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+.animate-breathe {
+    animation: breathe 2.5s ease-in-out infinite;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+@keyframes slideOutRight {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.cart-drawer-open {
+    animation: slideInRight 0.3s ease-out;
+}
+.cart-drawer-close {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+.modal-overlay {
+    animation: fadeIn 0.2s ease-out;
+}
+.modal-content {
+    animation: scaleIn 0.2s ease-out;
+}
+
+/* === Gradient Text === */
+.gradient-text {
+    background: linear-gradient(135deg, #34D399, #86EFAC, #2DD4BF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* === Star Rating === */
+.star-filled {
+    color: #FBBF24;
+}
+.star-empty {
+    color: #D1D5DB;
+}
+
+/* === Overlay === */
+.overlay {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* === Toast Notification === */
+.toast-enter {
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* === Category Nav Active State === */
+.category-btn.active {
+    background-color: #059669;
+    color: #ffffff;
+}
+.category-btn:not(.active) {
+    color: #047857;
+}
+.category-btn:not(.active):hover {
+    background-color: #ECFDF5;
+}
+
+/* === Product Card === */
+.product-card {
+    transition: all 0.3s ease;
+}
+.product-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.1),
+                0 8px 10px -6px rgba(5, 150, 105, 0.05);
+}
+
+.product-card .product-image {
+    transition: transform 0.3s ease;
+}
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* === Category Card === */
+.category-card {
+    transition: all 0.3s ease;
+}
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.15);
+}
+.category-card:hover .category-arrow {
+    gap: 8px;
+}
+
+/* === Skeleton Loading === */
+.skeleton {
+    background: linear-gradient(90deg, #ECFDF5 25%, #D1FAE5 50%, #ECFDF5 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+@keyframes skeleton-pulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* === Line Clamp === */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+/* === Responsive helpers === */
+@media (max-width: 639px) {
+    .mobile-card { display: block; }
+    .desktop-card { display: none; }
+}
+@media (min-width: 640px) {
+    .mobile-card { display: none; }
+    .desktop-card { display: block; }
+}
