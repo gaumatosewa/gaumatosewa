@@ -97,7 +97,7 @@ const UI = {
                     <div class="text-sm text-emerald-700 font-medium mb-3">${nprPrice}</div>
                     <div class="flex items-center gap-2" onclick="event.stopPropagation()">
                         <select id="dw-${p.id}" class="flex-1 px-2 py-1.5 border border-emerald-200 rounded-lg text-xs bg-white outline-none focus:border-emerald-500">${p.weights.map(w => `<option value="${w}" ${w === p.defaultWeight ? 'selected' : ''}>${w}</option>`).join('')}</select>
-                        <select class="px-2 py-1.5 border border-emerald-200 rounded-lg text-xs bg-white outline-none focus:border-emerald-500">
+                        <select id="form-${p.id}" class="px-2 py-1.5 border border-emerald-200 rounded-lg text-xs bg-white outline-none focus:border-emerald-500 disabled:bg-emerald-50 disabled:text-emerald-400 disabled:cursor-not-allowed" ${(p.unitType === 'volume' || p.unitType === 'piece') ? 'disabled' : ''}>
                             <option value="raw">Raw Form</option>
                             <option value="powder">Powder Form</option>
                         </select>
@@ -119,7 +119,9 @@ const UI = {
         const weight = selectEl ? selectEl.value : p.defaultWeight;
         const multiplier = p.priceMultiplier[weight] || 1;
         const price = +(p.price * multiplier).toFixed(2);
-        const msg = Cart.add(p, weight, 'Raw Form', price);
+        const formEl = document.getElementById(`form-${productId}`);
+        const form = (formEl && !formEl.disabled && formEl.value === 'powder') ? 'Powder Form' : 'Raw Form';
+        const msg = Cart.add(p, weight, form, price);
         Toast.show(msg);
     },
 
@@ -181,7 +183,9 @@ const UI = {
         ws.innerHTML = p.weights.map(w => `<option value="${w}" ${w === p.defaultWeight ? 'selected' : ''}>${w}</option>`).join('');
 
         document.getElementById('modalDescription').textContent = p.description;
-        document.getElementById('modalForm').value = 'raw';
+        const modalFormEl = document.getElementById('modalForm');
+        modalFormEl.value = 'raw';
+        modalFormEl.disabled = (p.unitType === 'volume' || p.unitType === 'piece');
 
         // Category badge
         const catBadge = document.getElementById('modalCategoryBadge');
