@@ -100,7 +100,7 @@ const Cart = {
                     <div class="font-semibold text-emerald-900 text-sm truncate">${item.name}</div>
                     <div class="flex items-center gap-1 mt-0.5">
                         <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded">${item.weight}</span>
-                        <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded">${item.form}</span>
+                        ${item.form ? `<span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded">${item.form}</span>` : ''}
                     </div>
                     <div class="flex items-baseline gap-1 mt-1">
                         <span class="text-sm font-bold text-emerald-900">$${(item.price * item.qty).toFixed(2)}</span>

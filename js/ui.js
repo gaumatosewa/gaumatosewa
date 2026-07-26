@@ -120,8 +120,9 @@ const UI = {
         const weight = selectEl ? selectEl.value : p.defaultWeight;
         const multiplier = p.priceMultiplier[weight] || 1;
         const price = +(p.price * multiplier).toFixed(2);
+        const hasForm = !(p.unitType === 'volume' || p.unitType === 'piece');
         const formEl = document.getElementById(`form-${productId}`);
-        const form = (formEl && !formEl.disabled && formEl.value === 'powder') ? 'Powder Form' : 'Raw Form';
+        const form = hasForm ? ((formEl && formEl.value === 'powder') ? 'Powder Form' : 'Raw Form') : '';
         const msg = Cart.add(p, weight, form, price);
         Toast.show(msg);
     },
@@ -250,7 +251,8 @@ const UI = {
         if (!this.currentModalProduct) return;
         const p = this.currentModalProduct;
         const weight = document.getElementById('modalWeight').value;
-        const form = document.getElementById('modalForm').value === 'powder' ? 'Powder Form' : 'Raw Form';
+        const hasForm = !(p.unitType === 'volume' || p.unitType === 'piece');
+        const form = hasForm ? (document.getElementById('modalForm').value === 'powder' ? 'Powder Form' : 'Raw Form') : '';
         const multiplier = p.priceMultiplier[weight] || 1;
         const price = +(p.price * multiplier).toFixed(2);
         const msg = Cart.add(p, weight, form, price);
