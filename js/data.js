@@ -11,7 +11,7 @@ const AppData = {
 
     async load() {
         try {
-            const res = await fetch('/data/products.json');
+            const res = await fetch('/data/products.json?t=' + Date.now());
             if (res.ok) {
                 const data = await res.json();
                 this.categories = data.categories || [];

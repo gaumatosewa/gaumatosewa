@@ -38,7 +38,7 @@ const SiteConfig = {
 
         try {
             // Fallback to local JSON
-            const res = await fetch('/data/config.json');
+            const res = await fetch('/data/config.json?t=' + Date.now());
             if (res.ok) {
                 this.data = await res.json();
                 return this.data;
