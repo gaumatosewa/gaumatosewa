@@ -97,10 +97,11 @@ const UI = {
                     <div class="text-sm text-emerald-700 font-medium mb-3">${nprPrice}</div>
                     <div class="flex items-center gap-2" onclick="event.stopPropagation()">
                         <select id="dw-${p.id}" class="flex-1 px-2 py-1.5 border border-emerald-200 rounded-lg text-xs bg-white outline-none focus:border-emerald-500">${p.weights.map(w => `<option value="${w}" ${w === p.defaultWeight ? 'selected' : ''}>${w}</option>`).join('')}</select>
-                        <select id="form-${p.id}" class="px-2 py-1.5 border border-emerald-200 rounded-lg text-xs bg-white outline-none focus:border-emerald-500 disabled:bg-emerald-50 disabled:text-emerald-400 disabled:cursor-not-allowed" ${(p.unitType === 'volume' || p.unitType === 'piece') ? 'disabled' : ''}>
+                        ${(p.unitType === 'volume' || p.unitType === 'piece') ? '' : `
+                        <select id="form-${p.id}" class="px-2 py-1.5 border border-emerald-200 rounded-lg text-xs bg-white outline-none focus:border-emerald-500">
                             <option value="raw">Raw Form</option>
                             <option value="powder">Powder Form</option>
-                        </select>
+                        </select>`}
                         <button onclick="UI.quickAdd(${p.id}, event)" class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-1">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
                         </button>
@@ -185,8 +186,12 @@ const UI = {
 
         document.getElementById('modalDescription').textContent = p.description;
         const modalFormEl = document.getElementById('modalForm');
+        const modalFormField = document.getElementById('modalFormField');
+        const modalWeightField = document.getElementById('modalWeightField');
+        const hideForm = (p.unitType === 'volume' || p.unitType === 'piece');
         modalFormEl.value = 'raw';
-        modalFormEl.disabled = (p.unitType === 'volume' || p.unitType === 'piece');
+        modalFormField.classList.toggle('hidden', hideForm);
+        modalWeightField.classList.toggle('col-span-2', hideForm);
 
         // Category badge
         const catBadge = document.getElementById('modalCategoryBadge');
