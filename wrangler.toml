@@ -1,4 +1,5 @@
 name = "gaumatosewa"
+pages_build_output_dir = "."
 
 [vars]
 SITE_NAME = "GreenEarth Organics"
