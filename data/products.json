@@ -46,8 +46,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": true,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/pure-gau-balm.mp4"
     },
     {
       "id": 2,
@@ -63,8 +76,21 @@
       "defaultWeight": "1 Ltr",
       "unitType": "volume",
       "featured": true,
-      "weights": ["250ml", "500ml", "1 Ltr", "2 Ltr", "5 Ltr"],
-      "priceMultiplier": { "250ml": 0.3, "500ml": 0.6, "1 Ltr": 1, "2 Ltr": 1.9, "5 Ltr": 4.5 }
+      "weights": [
+        "250ml",
+        "500ml",
+        "1 Ltr",
+        "2 Ltr",
+        "5 Ltr"
+      ],
+      "priceMultiplier": {
+        "250ml": 0.3,
+        "500ml": 0.6,
+        "1 Ltr": 1,
+        "2 Ltr": 1.9,
+        "5 Ltr": 4.5
+      },
+      "video": "/videos/gau-healing-oil.mp4"
     },
     {
       "id": 3,
@@ -80,8 +106,21 @@
       "defaultWeight": "1 Ltr",
       "unitType": "volume",
       "featured": false,
-      "weights": ["250ml", "500ml", "1 Ltr", "2 Ltr", "5 Ltr"],
-      "priceMultiplier": { "250ml": 0.3, "500ml": 0.6, "1 Ltr": 1, "2 Ltr": 1.9, "5 Ltr": 4.5 }
+      "weights": [
+        "250ml",
+        "500ml",
+        "1 Ltr",
+        "2 Ltr",
+        "5 Ltr"
+      ],
+      "priceMultiplier": {
+        "250ml": 0.3,
+        "500ml": 0.6,
+        "1 Ltr": 1,
+        "2 Ltr": 1.9,
+        "5 Ltr": 4.5
+      },
+      "video": "/videos/gau-face-cream.mp4"
     },
     {
       "id": 4,
@@ -97,8 +136,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": false,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/gau-herbal-soap.mp4"
     },
     {
       "id": 5,
@@ -114,8 +166,13 @@
       "defaultWeight": "1 Piece",
       "unitType": "piece",
       "featured": true,
-      "weights": ["1 Piece"],
-      "priceMultiplier": { "1 Piece": 1 }
+      "weights": [
+        "1 Piece"
+      ],
+      "priceMultiplier": {
+        "1 Piece": 1
+      },
+      "video": "/videos/gau-capsules-60ct.mp4"
     },
     {
       "id": 6,
@@ -131,8 +188,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": true,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/bioboost-root-enhancer.mp4"
     },
     {
       "id": 7,
@@ -141,15 +211,28 @@
       "image": "phosphosol-microbial-mix.jpg",
       "category": "bacterial-fertilizers",
       "description": "Phosphate-solubilizing bacteria that convert insoluble phosphorus into plant-available forms. Boosts flowering, fruiting, and seed production. Suitable for all soil types and crops.",
-      "price": 38.50,
+      "price": 38.5,
       "comparePrice": null,
       "rating": 4.4,
       "reviews": 62,
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": false,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/phosphosol-microbial-mix.mp4"
     },
     {
       "id": 8,
@@ -165,8 +248,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": true,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/vermirich-compost-plus.mp4"
     },
     {
       "id": 9,
@@ -182,8 +278,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": false,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/mycorrhizal-inoculant.mp4"
     },
     {
       "id": 10,
@@ -192,15 +301,28 @@
       "image": "biofert-all-purpose-blend.jpg",
       "category": "bacterial-fertilizers",
       "description": "A balanced consortium of nitrogen-fixing, phosphate-solubilizing, and potassium-mobilizing bacteria. One application covers all major nutrient needs for vegetables, fruits, and grains.",
-      "price": 35.00,
-      "comparePrice": 45.00,
+      "price": 35.0,
+      "comparePrice": 45.0,
       "rating": 4.5,
       "reviews": 88,
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": false,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/biofert-all-purpose-blend.mp4"
     },
     {
       "id": 11,
@@ -216,8 +338,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": true,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/organic-tulsi-holy-basil.mp4"
     },
     {
       "id": 12,
@@ -233,8 +368,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": true,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/ashwagandha-root-powder.mp4"
     },
     {
       "id": 13,
@@ -250,8 +398,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": false,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/turmeric-root-powder.mp4"
     },
     {
       "id": 14,
@@ -267,8 +428,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": false,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/dried-lemongrass.mp4"
     },
     {
       "id": 15,
@@ -284,8 +458,21 @@
       "defaultWeight": "1 Kg",
       "unitType": "weight",
       "featured": true,
-      "weights": ["250g", "500g", "1 Kg", "2 Kg", "5 Kg"],
-      "priceMultiplier": { "250g": 0.3, "500g": 0.6, "1 Kg": 1, "2 Kg": 1.9, "5 Kg": 4.5 }
+      "weights": [
+        "250g",
+        "500g",
+        "1 Kg",
+        "2 Kg",
+        "5 Kg"
+      ],
+      "priceMultiplier": {
+        "250g": 0.3,
+        "500g": 0.6,
+        "1 Kg": 1,
+        "2 Kg": 1.9,
+        "5 Kg": 4.5
+      },
+      "video": "/videos/moringa-leaf-powder.mp4"
     }
   ],
   "testimonials": [
