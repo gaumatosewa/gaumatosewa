@@ -54,7 +54,7 @@ const UI = {
             <div class="mobile-card p-2">
                 <div class="relative mb-1.5">
                     <div class="h-14 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg overflow-hidden">
-                        <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-2xl\\'>${p.emoji}</div>'">
+                        <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-2xl\\'>${p.emoji}</div>'">
                     </div>
                     ${discount ? `<span class="absolute top-1 left-1 px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full">${discount}%</span>` : ''}
                     ${p.featured ? `<span class="absolute top-1 right-1 px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded-full">★</span>` : ''}
@@ -73,7 +73,7 @@ const UI = {
             <!-- Desktop Card -->
             <div class="desktop-card">
                 <div class="relative h-48 bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden">
-                    <img src="${imgUrl}" alt="${p.name}" class="product-image w-full h-full object-cover" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-5xl\\'>${p.emoji}</div>'">
+                    <img src="${imgUrl}" alt="${p.name}" class="product-image w-full h-full object-contain" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-5xl\\'>${p.emoji}</div>'">
                     <div class="absolute top-2 left-2">
                         <span class="px-2 py-0.5 rounded-full text-[10px] font-medium border ${meta ? meta.bgClass : ''}">${meta ? meta.emoji : ''} ${meta ? meta.label : ''}</span>
                     </div>
@@ -150,15 +150,16 @@ const UI = {
         const discount = p.comparePrice ? Math.round((1 - p.price / p.comparePrice) * 100) : 0;
         const imgUrl = `/images/products/${p.image}`;
 
-        // Set video
+        // Set video (product-specific video takes priority, falls back to category video)
         const video = document.getElementById('modalVideo');
-        video.src = meta?.video || '';
+        video.src = p.video || meta?.video || '';
         video.play().catch(() => {});
 
         // Set product image as poster
         const videoArea = video.parentElement;
         videoArea.style.backgroundImage = `url(${imgUrl})`;
-        videoArea.style.backgroundSize = 'cover';
+        videoArea.style.backgroundSize = 'contain';
+        videoArea.style.backgroundRepeat = 'no-repeat';
         videoArea.style.backgroundPosition = 'center';
 
         // Populate fields
