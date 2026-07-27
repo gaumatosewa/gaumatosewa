@@ -4,10 +4,67 @@
  * 
  * Issue: Mobile cards only show weight dropdown, but desktop shows both weight AND form dropdown
  * This script clones/creates the form dropdown for mobile view
+ * 
+ * UPDATE: Hides form dropdown for liquid/liquid-based (litre/ltr) and piece-based products
  */
 
 (function() {
     'use strict';
+    
+    // Units that should NOT show form dropdown (liquids and pieces)
+    const UNITS_WITHOUT_FORM = ['litre', 'ltr', 'liter', 'l', 'piece', 'pc', 'pcs', 'each', 'unit'];
+    
+    /**
+     * Check if a product should have form dropdown based on its weight/volume units
+     * Returns true if form dropdown should be shown, false if it should be hidden
+     */
+    function shouldShowFormDropdown(mobileCard) {
+        // Find weight select in this mobile card
+        const weightSelect = mobileCard.querySelector('[id^="weight-"], [id^="mw-"]');
+        
+        if (!weightSelect) {
+            // No weight found - default to showing form
+            return true;
+        }
+        
+        // Get all option values from weight dropdown
+        const options = weightSelect.querySelectorAll('option');
+        let hasNonLiquidUnit = false;
+        
+        options.forEach(option => {
+            const value = (option.value || option.textContent || '').toLowerCase().trim();
+            
+            // Check if any option contains units that don't need form
+            const needsNoForm = UNITS_WITHOUT_FORM.some(unit => 
+                value.includes(unit) || value === unit
+            );
+            
+            // If we find ANY non-liquid/non-piece unit, we might still want to show form
+            // But if ALL options are liquids or pieces, hide form
+            
+            // Check for weight units that DO need form (grams, kg, etc.)
+            const weightUnits = ['g ', 'g)', 'kg', 'kgs', 'gram', 'mg', 'oz', 'lb', 'pound'];
+            const isWeightUnit = weightUnits.some(unit => value.includes(unit));
+            
+            if (isWeightUnit) {
+                hasNonLiquidUnit = true;
+            }
+        });
+        
+        // Also check the first option's text content as fallback
+        const firstOptionText = (options[0]?.textContent || '').toLowerCase();
+        const isLiquidOrPiece = UNITS_WITHOUT_FORM.some(unit => 
+            firstOptionText.includes(unit)
+        );
+        
+        // If all options are liquids/pieces OR the main unit is liquid/piece, hide form
+        if (isLiquidOrPiece && !hasNonLiquidUnit) {
+            console.log(`🚫 Product has ${firstOptionText} - hiding form dropdown`);
+            return false;
+        }
+        
+        return true;
+    }
     
     // Wait for DOM to be ready
     function initMobileFormFix() {
@@ -21,7 +78,7 @@
             return;
         }
         
-        console.log(`🔧 Found ${mobileCards.length} mobile cards - adding form dropdowns`);
+        console.log(`🔧 Found ${mobileCards.length} mobile cards - checking which need form dropdowns`);
         
         // Process each mobile card
         mobileCards.forEach((mobileCard, index) => {
@@ -31,6 +88,12 @@
             // Get product ID from onclick attribute or data attribute
             const productId = extractProductId(productCard);
             if (!productId) return;
+            
+            // NEW: Check if this product should have form dropdown based on units
+            if (!shouldShowFormDropdown(mobileCard)) {
+                console.log(`⏭️ Skipping form dropdown for product ${productId} (liquid/piece unit)`);
+                return;  // Skip adding form dropdown for litre/ltr/piece products
+            }
             
             // Check if form dropdown already exists in this mobile card
             const existingFormDropdown = mobileCard.querySelector('#form-' + productId + ', #mform-' + productId + ', .mobile-form-select');
@@ -235,7 +298,9 @@
         reinit: function() { 
             console.log('🔧 Manual reinit triggered');
             setTimeout(initMobileFormFix, 100); 
-        }
+        },
+        // Expose config for debugging
+        getUnitsWithoutForm: () => [...UNITS_WITHOUT_FORM]
     };
     
 })();
