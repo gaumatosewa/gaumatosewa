@@ -1,86 +1,86 @@
 /* ============================================
-   MOBILE VIEW FIX FOR GAUMATOSEWA
+   MOBILE VIEW FIX FOR GAUMATOSEWA 
    Ensures both WEIGHT SELECTOR and ADD-TO-CART FORM
-   are visible on mobile devices
+   are visible on MOBILE devices ONLY
+   
+   ⚠️ This ONLY affects screens < 640px (mobile)
+   Desktop layout is NOT affected!
    ============================================ */
 
-/* Ensure mobile cards display properly */
-.mobile-card {
-    display: flex !important;
-    flex-direction: column !important;
-}
-
-/* Show both weight selector AND form/button on mobile */
-.mobile-card .flex.items-center.gap-1 {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-}
-
-/* Make sure weight selector is visible on mobile */
-.mobile-card select[id^="weight-"] {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    flex: 1 1 auto !important;
-}
-
-/* Ensure add-to-cart button/form shows after weight selector on mobile */
-.mobile-card button[class*="add"],
-.mobile-card button[onclick*="addToCart"],
-.mobile-card button[onclick*="cart"],
-.mobile-card .btn-add,
-.mobile-card form {
-    display: flex !important;
-    width: 100% !important;
-    margin-top: 0.25rem !important;
-}
-
-/* If using onclick on product card, ensure inner elements are clickable */
-.mobile-card * {
-    pointer-events: auto !important;
-}
-
-/* Fix for product card click behavior on mobile */
-.product-card .mobile-card > div:last-child,
-.product-card .mobile-card > *:last-child {
-    margin-bottom: 0.25rem !important;
-}
-
-/* Ensure form elements inside mobile card are fully visible */
-.mobile-card form,
-.mobile-card button,
-.mobile-card input[type="number"],
-.mobile-card select {
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: flex !important;
-}
-
-/* Specific fix: Show elements that might be hidden on mobile */
+/* ============================================
+   MOBILE-ONLY STYLES (screens smaller than 640px)
+   These do NOT affect desktop/tablet!
+   ============================================ */
 @media (max-width: 639px) {
-    /* Ensure all interactive elements in product cards are visible */
-    .product-card .mobile-card > * {
-        display: block !important;
-        visibility: visible !important;
-    }
     
-    /* Weight selector row - show both weight and any adjacent buttons */
-    .mobile-card .flex.items-center.gap-1.mt-1 {
+    /* Ensure mobile cards display properly as column flex */
+    .mobile-card {
+        display: flex !important;
         flex-direction: column !important;
-        align-items: stretch !important;
     }
     
-    /* Make weight selector full width */
-    .mobile-card select[id^="weight-"] {
+    /* Show weight selector container with proper spacing */
+    .mobile-card .flex.items-center.gap-1 {
+        display: flex !important;
+        flex-direction: column !important;  /* Stack vertically on mobile */
+        gap: 0.25rem !important;
         width: 100% !important;
+    }
+    
+    /* Make sure weight selector is visible on mobile */
+    .mobile-card select[id^="weight-"] {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
         margin-bottom: 0.25rem !important;
     }
     
-    /* Show any button/form after weight selector */
-    .mobile-card .flex.items-center.gap-1.mt-1 ~ *,
-    .mobile-card .flex.items-center.gap-1.mt-1 + * {
-        display: block !important;
+    /* Ensure add-to-cart button/form shows after weight selector on mobile */
+    .mobile-card button[onclick*="cart"],
+    .mobile-card button[onclick*="add"],
+    .mobile-card form,
+    .mobile-card input[type="number"] {
+        display: flex !important;
+        display: -webkit-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
         width: 100% !important;
+        margin-top: 0.25rem !important;
     }
+    
+    /* Ensure all elements in mobile card are visible */
+    .mobile-card > * {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* Fix any hidden form-related elements in product cards */
+    .product-card .mobile-card button,
+    .product-card .mobile-card form {
+        display: block !important;
+        display: flex !important;
+        visibility: visible !important;
+    }
+
 }
+/* END OF MOBILE-ONLY STYLES */
+
+/* ============================================
+   DESKRIPT/TABLET STYLES (screens 640px and larger)
+   These ensure normal desktop behavior continues
+   Mobile card should be HIDDEN on desktop (show desktop-card instead)
+   ============================================ */
+@media (min-width: 640px) {
+    
+    /* Hide mobile cards on desktop - show desktop version instead */
+    .mobile-card {
+        display: none !important;
+    }
+    
+    /* Show desktop cards on larger screens */
+    .desktop-card {
+        display: block !important;
+    }
+
+}
+/* END OF DESKTOP/TABLET STYLES */
