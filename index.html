@@ -40,6 +40,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Custom Styles -->
+    <!-- Mobile View Fix - Show both weight selector and form on mobile -->
+    <link rel="stylesheet" href="/css/mobile-fix.css">
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 
@@ -140,11 +142,11 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-28 text-center">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-sm mb-6">
                 <span>🍃</span>
-                <span>100% Organic &amp; Natural</span>
+                <span>100% Organic & Natural</span>
             </div>
             <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight mb-4">
                 Nature's Best for<br>
-                <span class="gradient-text">Your Wellness</span> &amp; Soil
+                <span class="gradient-text">Your Wellness</span> & Soil
             </h1>
             <p data-config="tagline" class="text-emerald-200/80 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">Loading...</p>
             <div class="flex items-center justify-center gap-3 mb-12">
@@ -347,7 +349,7 @@
                     <ul class="space-y-2 text-sm text-emerald-200/60">
                         <li><a href="#inquiry" class="hover:text-emerald-300 transition-colors">Contact Us</a></li>
                         <li><a href="#" class="hover:text-emerald-300 transition-colors">Shipping Info</a></li>
-                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Returns &amp; Refunds</a></li>
+                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Returns & Refunds</a></li>
                         <li><a href="#" class="hover:text-emerald-300 transition-colors">FAQ</a></li>
                     </ul>
                 </div>
@@ -489,7 +491,7 @@
                         <button onclick="Checkout.goStep2()" class="w-full mt-4 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors text-sm">Continue to Payment</button>
                     </div>
                     <div id="checkoutStep2" class="hidden">
-                        <h4 class="font-semibold text-emerald-900 text-sm mb-4">Scan &amp; Pay</h4>
+                        <h4 class="font-semibold text-emerald-900 text-sm mb-4">Scan & Pay</h4>
                         <div class="border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center mb-4">
                             <img src="/images/qr-payment.svg" alt="QR Payment" class="w-48 h-48 mx-auto mb-3">
                             <p class="font-semibold text-emerald-900 text-sm">Scan QR Code to Pay</p>
@@ -569,5 +571,8 @@
     <script src="/js/checkout.js?v=22"></script>
     <script src="/js/app.js?v=22"></script>
 
+
+    <!-- Mobile View Fix - Ensure form elements show on mobile -->
+    <script src="/js/mobile-fix.js"></script>
 </body>
 </html>
