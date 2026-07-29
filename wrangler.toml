@@ -48,7 +48,7 @@ EXCHANGE_RATE_TO_NPR = "133.50"
 name = "gaumatosewa-preview"
 
 [env.preview.vars]
-SITE_NAME = "GreenEarth Organics [PREVIEW]"
+SITE_NAME = "VedaBotanica Research and Development [PREVIEW]"
 DEFAULT_CURRENCY = "USD"
 
 # =============================================================================
