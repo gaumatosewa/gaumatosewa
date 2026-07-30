@@ -1,3 +1,8 @@
+/**
+ * /api/auth/login
+ * POST { username, password }
+ * If admin user doesn't exist yet, auto-creates from ADMIN_USERNAME/ADMIN_PASSWORD/ADMIN_EMAIL env vars.
+ */
 export async function onRequest(context) {
   const { request, env } = context;
   const USERS = env.USERS_DB;
@@ -9,6 +14,27 @@ export async function onRequest(context) {
     const { username, password } = await request.json();
     if (!username || !password) return j({ error: 'Username and password required' }, 400);
 
+    // --- Auto-create admin on first login attempt ---
+    const adminUser = env.ADMIN_USERNAME || '';
+    const adminPw = env.ADMIN_PASSWORD || '';
+    const adminEmail = (env.ADMIN_EMAIL || '').toLowerCase();
+
+    if (adminUser && adminPw && adminEmail) {
+      const exists = await USERS.prepare('SELECT id FROM users WHERE is_admin = 1').first();
+      if (!exists && (username === adminUser || username.toLowerCase() === adminEmail) && password === adminPw) {
+        const salt = crypto.randomUUID().replace(/-/g, '');
+        const hash = await hashPw(adminPw, salt);
+        const result = await USERS.prepare(
+          'INSERT INTO users (username, email, password_hash, salt, display_name, is_admin) VALUES (?, ?, ?, ?, ?, 1)'
+        ).bind(adminUser, adminEmail, hash, salt, 'Admin').run();
+        const userId = result.meta.last_row_id;
+        const token = crypto.randomUUID();
+        await USERS.prepare('INSERT INTO sessions (user_id, token) VALUES (?, ?)').bind(userId, token).run();
+        return j({ success: true, token, user: { id: userId, username: adminUser, display_name: 'Admin', is_admin: true } });
+      }
+    }
+
+    // --- Normal login ---
     const user = await USERS.prepare(
       "SELECT id, username, email, password_hash, salt, display_name, is_admin FROM users WHERE username = ? OR email = ?"
     ).bind(username, username.toLowerCase()).first();
