@@ -100,6 +100,11 @@ function renderCategoryNav() {
         navHTML += `<button onclick="UI.filterByCategory('${cat.slug}')" class="category-btn shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors" data-category="${cat.slug}">${cat.label}</button>`;
         mobileHTML += `<button onclick="UI.filterByCategory('${cat.slug}');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">${cat.label}</button>`;
     }
+
+    // Blog button (same style as category buttons)
+    navHTML += `<button onclick="document.getElementById('blog').scrollIntoView({behavior:'smooth'})" class="category-btn shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors">Blog</button>`;
+    mobileHTML += `<button onclick="document.getElementById('blog').scrollIntoView({behavior:'smooth'});UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Blog</button>`;
+
     nav.innerHTML = navHTML;
 
     if (mobileLinks) {
