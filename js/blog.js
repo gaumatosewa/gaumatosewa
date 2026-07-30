@@ -81,15 +81,18 @@ const lkClass=c.myReaction==='like'?'text-blue-500 font-medium':'text-emerald-50
 const dkClass=c.myReaction==='dislike'?'text-red-500 font-medium':'text-emerald-500/40 hover:text-red-500';
 const replyChildren=(c.children||[]).map(r=>this._c(r,d+1)).join('');
 const replyFormId='rpl_'+c.id;
-const showReplyForm=d<3?`<button onclick="Blog.toggleReplyForm(${c.id})" class="text-xs text-emerald-500/40 hover:text-emerald-600 ml-1">Reply</button>`:'';
+const showReplyForm=!c.isStatic&&d<3?`<button onclick="Blog.toggleReplyForm(${c.id})" class="text-xs text-emerald-500/40 hover:text-emerald-600 ml-1">Reply</button>`:'';
+const reactBtns=c.isStatic
+?`<span class="flex items-center gap-0.5 text-emerald-500/40 text-xs">👍 ${c.likes||0}</span><span class="flex items-center gap-0.5 text-emerald-500/40 text-xs">👎 0</span>`
+:`<button onclick="Blog.react(${c.id},'like')" class="flex items-center gap-0.5 ${lkClass} text-xs transition-colors">👍 <span id="lk_${c.id}">${c.likes||0}</span></button>
+<button onclick="Blog.react(${c.id},'dislike')" class="flex items-center gap-0.5 ${dkClass} text-xs transition-colors">👎 <span id="dk_${c.id}">${c.dislikes||0}</span></button>`;
 
 return`<div class="py-3 ${bd}" style="${ml}">
 <div class="flex gap-2.5"><div class="w-7 h-7 rounded-full ${this.avc(c.author||'Anon')} flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">${this.ini(c.author||'Anonymous')}</div>
 <div class="flex-1 min-w-0"><div class="flex items-center gap-1 mb-1 flex-wrap"><span class="text-sm font-semibold text-emerald-900">${this.esc(c.author||'Anonymous')}</span><span class="text-[10px] text-emerald-600/40">${this.fmt(c.date||c.created_at)}</span>${badges}</div>
 <p class="text-sm text-emerald-900/70 leading-relaxed">${c.isStatic?c.text:this.esc(c.text)}</p>
 <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-<button onclick="Blog.react(${c.id},'like')" class="flex items-center gap-0.5 ${lkClass} text-xs transition-colors">👍 <span id="lk_${c.id}">${c.likes||0}</span></button>
-<button onclick="Blog.react(${c.id},'dislike')" class="flex items-center gap-0.5 ${dkClass} text-xs transition-colors">👎 <span id="dk_${c.id}">${c.dislikes||0}</span></button>
+${reactBtns}
 ${showReplyForm}${adminBtn}
 </div></div></div></div>
 <div id="${replyFormId}" class="hidden pl-10 py-2">${Auth.user?`<div class="flex gap-2 mb-2"><textarea id="rplTxt_${c.id}" rows="2" placeholder="Write a reply..." class="flex-1 px-3 py-2 border border-emerald-200 rounded-lg text-sm bg-white text-emerald-900 outline-none focus:border-emerald-500 resize-none"></textarea></div><div class="flex justify-end gap-2"><button onclick="Blog.toggleReplyForm(${c.id})" class="px-3 py-1.5 text-xs text-emerald-600/50 hover:text-emerald-600">Cancel</button><button onclick="Blog.addReply('${c.post_slug||this._activeSlug}',${c.id})" class="px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700">Reply</button></div>`:'<p class="text-xs text-emerald-600/40">Log in to reply.</p>'}</div>
