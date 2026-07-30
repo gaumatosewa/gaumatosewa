@@ -54,6 +54,8 @@ EXCHANGE_RATE_TO_NPR = "133.50"
 
 # Admin: first signup or this email becomes admin
 ADMIN_EMAIL = "info@greenearth.com"
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "changeme123"
 
 # =============================================================================
 # Preview Environment (for pull requests)
