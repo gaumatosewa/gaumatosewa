@@ -17,6 +17,68 @@ const Auth = {
                 else localStorage.removeItem('auth_token');
             } catch (e) { localStorage.removeItem('auth_token'); }
         }
+        this.updateNavButton();
+    },
+
+    openModal() {
+        const m = document.getElementById('authModal');
+        const ct = document.getElementById('authModalContent');
+        if (!m || !ct) return;
+
+        if (this.user) {
+            ct.innerHTML = `
+                <div class="text-center pt-4">
+                    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold mx-auto mb-3">${this.escapeHtml((this.user.display_name || this.user.username)[0]?.toUpperCase() || '?')}</div>
+                    <h3 class="text-lg font-bold text-emerald-900">${this.escapeHtml(this.user.display_name || this.user.username)}</h3>
+                    <p class="text-sm text-emerald-600/50 mb-1">@${this.escapeHtml(this.user.username)}</p>
+                    ${this.user.is_admin ? '<span class="inline-block text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium mb-3">Admin</span>' : ''}
+                    <div class="mt-4 pt-4 border-t border-emerald-100">
+                        <button onclick="Auth._modalLogout()" class="w-full px-4 py-2.5 bg-red-50 text-red-600 text-sm font-medium rounded-lg hover:bg-red-100 transition-colors">Sign Out</button>
+                    </div>
+                </div>`;
+        } else {
+            ct.innerHTML = `
+                <div class="text-center mb-4 pt-2">
+                    <h3 class="text-lg font-bold text-emerald-900">Welcome</h3>
+                    <p class="text-sm text-emerald-600/50">Sign in to leave comments on the blog</p>
+                </div>
+                <div id="authModal_form"></div>`;
+            this.renderInlineForm('authModal_form', () => {
+                this.closeModal();
+                this.updateNavButton();
+            });
+        }
+
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    },
+
+    closeModal() {
+        const m = document.getElementById('authModal');
+        if (!m) return;
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+        document.body.style.overflow = '';
+    },
+
+    updateNavButton() {
+        const btn = document.getElementById('navAuthBtn');
+        if (!btn) return;
+        if (this.user) {
+            const initial = (this.user.display_name || this.user.username)[0]?.toUpperCase() || '?';
+            btn.innerHTML = `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center">${initial}</span>`;
+            btn.title = this.user.display_name || this.user.username;
+        } else {
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="user" aria-hidden="true" class="lucide lucide-user w-5 h-5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+            btn.title = 'Sign In';
+        }
+    },
+
+    async _modalLogout() {
+        await this.logout();
+        this.closeModal();
+        this.updateNavButton();
     },
 
     async signup(username, email, password, displayName) {

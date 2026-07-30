@@ -84,6 +84,9 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shopping-bag" aria-hidden="true" class="lucide lucide-shopping-bag w-5 h-5"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></svg>
                         <span id="cartBadge" class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
                     </button>
+                    <button onclick="Auth.openModal()" id="navAuthBtn" class="p-2 rounded-lg hover:bg-emerald-50 text-emerald-700 transition-colors" title="Account">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="user" aria-hidden="true" class="lucide lucide-user w-5 h-5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </button>
                     <button onclick="UI.toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-emerald-50 text-emerald-700">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu w-5 h-5"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
                     </button>
@@ -122,7 +125,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="search" aria-hidden="true" class="lucide lucide-search w-4 h-4 text-emerald-600 mr-2"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
                 <input type="text" placeholder="Search products..." class="bg-transparent text-sm outline-none w-full text-emerald-900" oninput="UI.filterProducts()">
             </div>
-            <div id="mobileMenuLinks" class="flex flex-col gap-2"><button onclick="UI.filterByCategory('all');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">All Products</button><button onclick="UI.filterByCategory('gau-products');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Gau Products</button><button onclick="UI.filterByCategory('bacterial-fertilizers');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Bio Fertilizers</button><button onclick="UI.filterByCategory('herbs');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Herbs</button><button onclick="document.getElementById('blog').scrollIntoView({behavior:'smooth'});UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Blog</button></div>
+            <div id="mobileMenuLinks" class="flex flex-col gap-2"><button onclick="UI.filterByCategory('all');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">All Products</button><button onclick="UI.filterByCategory('gau-products');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Gau Products</button><button onclick="UI.filterByCategory('bacterial-fertilizers');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Bio Fertilizers</button><button onclick="UI.filterByCategory('herbs');UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Herbs</button><button onclick="document.getElementById('blog').scrollIntoView({behavior:'smooth'});UI.toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Blog</button><button onclick="UI.toggleMobileMenu();Auth.openModal()" class="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 text-sm text-emerald-700">Sign In</button></div>
         </div>
     </div>
 
@@ -1242,6 +1245,16 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
             </button>
             <div id="blogModalContent"></div>
+        </div>
+    </div>
+
+    <!-- ========== AUTH MODAL ========== -->
+    <div id="authModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-black/50 backdrop-blur-sm p-4" onclick="if(event.target===this)Auth.closeModal()">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 relative animate-fade-in">
+            <button onclick="Auth.closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 hover:bg-emerald-200 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </button>
+            <div id="authModalContent"></div>
         </div>
     </div>
 
