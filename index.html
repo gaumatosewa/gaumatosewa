@@ -1222,6 +1222,29 @@
         </div>
     </section>
 
+    <!-- ========== BLOG ========== -->
+    <section id="blog" class="py-12 sm:py-16 lg:py-20 bg-gray-50/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-900 mb-2">From Our Blog</h2>
+                <p class="text-emerald-600/70 text-sm sm:text-base">Insights on organic farming, herbal wellness, and sustainable living</p>
+            </div>
+            <div id="blogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Blog cards rendered by js/blog.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Post Modal -->
+    <div id="blogModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm p-4" onclick="if(event.target===this)Blog.closeModal()">
+        <div class="bg-white rounded-2xl max-h-[90vh] overflow-y-auto w-full max-w-3xl shadow-2xl p-6 sm:p-8 relative animate-fade-in">
+            <button onclick="Blog.closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 hover:bg-emerald-200 transition-colors z-10 sm:hidden">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </button>
+            <div id="blogModalContent"></div>
+        </div>
+    </div>
+
     <!-- ========== INQUIRY ========== -->
     <section id="inquiry" class="py-12 sm:py-16 lg:py-20 bg-gray-50/50 scroll-mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
@@ -1312,7 +1335,7 @@
                         <li><a href="#" class="hover:text-emerald-300 transition-colors">About Us</a></li>
                         <li><a href="#" class="hover:text-emerald-300 transition-colors">Our Farm Partners</a></li>
                         <li><a href="#" class="hover:text-emerald-300 transition-colors">Sustainability</a></li>
-                        <li><a href="#" class="hover:text-emerald-300 transition-colors">Blog</a></li>
+                        <li><a href="#blog" class="hover:text-emerald-300 transition-colors">Blog</a></li>
                     </ul>
                 </div>
                 <!-- Support -->
@@ -1541,6 +1564,7 @@
     <script src="/js/ui.js?v=22"></script>
     <script src="/js/inquiry.js?v=22"></script>
     <script src="/js/checkout.js?v=22"></script>
+    <script src="/js/blog.js?v=22"></script>
     <script src="/js/app.js?v=22"></script>
     
     <!-- Mobile Form Dropdown Fix - JavaScript -->

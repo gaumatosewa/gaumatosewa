@@ -13,6 +13,10 @@
     // 3. Load product data
     await AppData.load();
 
+    // 3b. Load and render blog
+    await Blog.load();
+    Blog.renderBlogSection();
+
     // 4. Render dynamic sections from data
     renderCategoryNav();
     renderCategoryShowcase();
