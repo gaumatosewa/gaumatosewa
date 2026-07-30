@@ -1,14 +1,12 @@
 /**
  * Cloudflare Pages Function - /api/config
- * Serves site configuration from environment variables.
- * Falls back to defaults if env vars are not set.
- * Environment variables are configured in wrangler.toml [vars]
- * or Cloudflare Dashboard → Pages → Settings → Environment Variables.
+ * Serves site configuration from environment variables ONLY.
+ * ALL values come from wrangler.toml [vars] or Cloudflare Dashboard.
+ * No hardcoded fallbacks - env vars are the single source of truth.
  *
  * The USD -> NPR exchange rate is fetched live from open.er-api.com
  * (free, no API key, updates daily) and cached at the edge for 1 hour.
- * If the live fetch fails for any reason, it falls back to
- * EXCHANGE_RATE_TO_NPR / the hardcoded default so the site never breaks.
+ * If the live fetch fails, it falls back to EXCHANGE_RATE_TO_NPR env var.
  */
 
 async function getLiveExchangeRate(fallbackRate) {
@@ -37,15 +35,15 @@ export async function onRequest(context) {
   const liveRate = await getLiveExchangeRate(fallbackRate);
 
   const config = {
-    siteName: env.SITE_NAME || "GreenEarth Organics",
-    tagline: env.SITE_TAGLINE || "Premium organic products from Nepal.",
-    copyright: env.SITE_COPYRIGHT || `© ${new Date().getFullYear()} GreenEarth Organics. All rights reserved.`,
+    siteName: env.SITE_NAME || "",
+    tagline: env.SITE_TAGLINE || "",
+    copyright: env.SITE_COPYRIGHT || `\u00a9 ${new Date().getFullYear()}. All rights reserved.`,
     contact: {
-      email: env.CONTACT_EMAIL || "info@greenearth.com",
-      phone: env.CONTACT_PHONE || "+977-9800000000",
-      city: env.ADDRESS_CITY || "Kathmandu",
-      province: env.ADDRESS_PROVINCE || "Bagmati",
-      country: env.ADDRESS_COUNTRY || "Nepal",
+      email: env.CONTACT_EMAIL || "",
+      phone: env.CONTACT_PHONE || "",
+      city: env.ADDRESS_CITY || "",
+      province: env.ADDRESS_PROVINCE || "",
+      country: env.ADDRESS_COUNTRY || "",
     },
     currency: {
       default: env.DEFAULT_CURRENCY || "USD",

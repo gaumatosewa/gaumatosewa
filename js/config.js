@@ -2,21 +2,26 @@
  * config.js - Site Configuration Loader
  * Fetches config from Cloudflare Pages Function /api/config,
  * falls back to local data/config.json.
+ * 
+ * ALL values come from environment variables defined in wrangler.toml.
+ * No hardcoded brand names - wrangler.toml is the single source of truth.
  */
 
 const SiteConfig = {
     data: null,
 
+    // Minimal generic fallbacks - should never be hit in production
+    // because /api/config reads from wrangler.toml env vars.
     defaults: {
-        siteName: "GreenEarth Organics",
-        tagline: "Your trusted source for premium organic products.",
-        copyright: `© ${new Date().getFullYear()} GreenEarth Organics. All rights reserved. Made with ❤️ for the planet`,
+        siteName: "",
+        tagline: "",
+        copyright: ``,
         contact: {
-            email: "info@greenearth.com",
-            phone: "+977-9800000000",
-            city: "Kathmandu",
-            province: "Bagmati",
-            country: "Nepal",
+            email: "",
+            phone: "",
+            city: "",
+            province: "",
+            country: "",
         },
         currency: {
             default: "USD",
@@ -26,7 +31,7 @@ const SiteConfig = {
 
     async load() {
         try {
-            // Try Cloudflare Pages Function first
+            // Try Cloudflare Pages Function first (reads from env vars)
             const res = await fetch('/api/config');
             if (res.ok) {
                 this.data = await res.json();
@@ -37,7 +42,7 @@ const SiteConfig = {
         }
 
         try {
-            // Fallback to local JSON
+            // Fallback to local JSON (should mirror wrangler.toml values)
             const res = await fetch('/data/config.json?t=' + Date.now());
             if (res.ok) {
                 this.data = await res.json();
@@ -47,7 +52,8 @@ const SiteConfig = {
             // JSON not available
         }
 
-        // Ultimate fallback to hardcoded defaults
+        // Ultimate fallback to minimal defaults
+        console.warn('SiteConfig: Could not load from /api/config or /data/config.json. Using minimal defaults.');
         this.data = this.defaults;
         return this.data;
     },

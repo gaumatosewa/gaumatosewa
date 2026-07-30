@@ -72,6 +72,7 @@ function applyConfig() {
         const value = mappings[key];
         if (value !== undefined && value !== null) {
             el.textContent = value;
+            el.classList.add('configured');
         }
     });
 

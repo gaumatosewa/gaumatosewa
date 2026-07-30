@@ -1,9 +1,20 @@
 <html lang="en" class="scroll-smooth"><head>
+<style>
+/* Config elements hidden until JS populates values from environment variables */
+[data-config]:not(.configured) {
+  color: transparent !important;
+}
+[data-config].configured {
+  color: inherit !important;
+  transition: color 0.3s ease;
+}
+</style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Premium organic gau products, bio-fertilizers, and medicinal herbs from Nepal. Sourced sustainably, delivered with care.">
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    <title>GreenEarth Organics - Premium Organic Products</title>
+    <title>Loading...</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,7 +66,7 @@
                     <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center animate-breathe">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="leaf" aria-hidden="true" class="lucide lucide-leaf w-5 h-5 text-white"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
                     </div>
-                    <span class="text-lg font-bold text-emerald-900" data-config="siteName">GreenEarth Organics</span>
+                    <span class="text-lg font-bold text-emerald-900" data-config="siteName"></span>
                 </div>
 
                 <!-- Desktop Search -->
@@ -101,7 +112,7 @@
                     <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="leaf" aria-hidden="true" class="lucide lucide-leaf w-4 h-4 text-white"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
                     </div>
-                    <span class="font-bold text-emerald-900" data-config="siteName">GreenEarth Organics</span>
+                    <span class="font-bold text-emerald-900" data-config="siteName"></span>
                 </div>
                 <button onclick="UI.toggleMobileMenu()" class="p-2 hover:bg-emerald-50 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5 text-emerald-700"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
@@ -142,7 +153,7 @@
                 Nature's Best for<br>
                 <span class="gradient-text">Your Wellness</span> & Soil
             </h1>
-            <p data-config="tagline" class="text-emerald-200/80 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care.</p>
+            <p data-config="tagline" class="text-emerald-200/80 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto mb-8 leading-relaxed"></p>
             <div class="flex items-center justify-center gap-3 mb-12">
                 <a href="#products" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-900 font-semibold rounded-xl hover:bg-emerald-50 transition-colors text-sm">
                     Shop Now <span>↓</span>
@@ -1280,13 +1291,13 @@
                         <div class="w-8 h-8 bg-gradient-to-br from-emerald-400 to-green-500 rounded-lg flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="leaf" aria-hidden="true" class="lucide lucide-leaf w-4 h-4 text-white"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
                         </div>
-                        <span class="font-bold text-white" data-config="siteName">GreenEarth Organics</span>
+                        <span class="font-bold text-white" data-config="siteName"></span>
                     </div>
-                    <p data-config="tagline" class="text-sm text-emerald-200/60 leading-relaxed mb-4">Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care.</p>
+                    <p data-config="tagline" class="text-sm text-emerald-200/60 leading-relaxed mb-4"></p>
                     <div class="space-y-2 text-sm text-emerald-200/60">
-                        <div class="flex items-center gap-2"><span>📧</span> <span data-config="contact.email">info@greenearth.com</span></div>
-                        <div class="flex items-center gap-2"><span>📞</span> <span data-config="contact.phone">+977-9800000000</span></div>
-                        <div class="flex items-center gap-2"><span>📍</span> <span data-config="contact.city">Kathmandu</span><span data-config="contact.country">Nepal</span></div>
+                        <div class="flex items-center gap-2"><span>📧</span> <span data-config="contact.email"></span></div>
+                        <div class="flex items-center gap-2"><span>📞</span> <span data-config="contact.phone"></span></div>
+                        <div class="flex items-center gap-2"><span>📍</span> <span data-config="contact.city"></span><span data-config="contact.country"></span></div>
                     </div>
                 </div>
                 <!-- Products -->
@@ -1317,7 +1328,7 @@
             </div>
 
             <div class="border-t border-emerald-800/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-emerald-200/50">
-                <p data-config="copyright">© 2025 GreenEarth Organics. All rights reserved. Made with ❤️ for the planet</p>
+                <p data-config="copyright"></p>
                 <div class="flex items-center gap-4">
                     <a href="#" class="hover:text-emerald-300 transition-colors">Privacy Policy</a>
                     <a href="#" class="hover:text-emerald-300 transition-colors">Terms of Service</a>
@@ -1467,7 +1478,7 @@
                                 <span class="text-emerald-600/70">USD Equivalent</span>
                                 <span id="checkoutUSD" class="text-emerald-700"></span>
                             </div>
-                            <div class="text-xs text-emerald-500 mt-2">Merchant: <span data-config="siteName">GreenEarth Organics</span></div>
+                            <div class="text-xs text-emerald-500 mt-2">Merchant: <span data-config="siteName"></span></div>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="Checkout.goStep(1)" class="flex-1 py-2.5 border border-emerald-200 text-emerald-700 font-medium rounded-xl text-sm hover:bg-emerald-50">Back</button>

@@ -1,16 +1,17 @@
 # =============================================================================
 # Cloudflare Pages Configuration
-# Project: gaumatosewa (GreenEarth Organics)
+# Project: gaumatosewa (Trishanku Baba)
 # =============================================================================
 #
-# 📝 DEPLOYMENT METHOD:
+# DEPLOYMENT METHOD:
 # - Production: Automatic via GitHub Actions (push to main)
 # - Preview: Automatic via GitHub Actions (pull requests)
 # - Manual: wrangler pages deploy . --project-name=gaumatosewa
 #
-# ⚠️ ENVIRONMENT VARIABLES:
+# ENVIRONMENT VARIABLES:
 # These are used by /functions/api/config.js to serve dynamic config.
-# For sensitive values, use Cloudflare Dashboard → Pages → Settings → Environment Variables.
+# This is the SINGLE SOURCE OF TRUTH for all site configuration.
+# For sensitive values, use Cloudflare Dashboard > Pages > Settings > Environment Variables.
 # =============================================================================
 
 name = "gaumatosewa"
@@ -25,7 +26,7 @@ compatibility_date = "2024-01-01"
 # Site Identity
 SITE_NAME = "Trishanku Baba"
 SITE_TAGLINE = "Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care."
-SITE_COPYRIGHT = "© 2025 GreenEarth Organics. All rights reserved. Made with ❤️ for the planet"
+SITE_COPYRIGHT = "\u00a9 2025 Trishanku Baba. All rights reserved. Made with \u2764\ufe0f for the planet"
 
 # Contact Information
 CONTACT_EMAIL = "info@greenearth.com"
@@ -49,7 +50,15 @@ name = "gaumatosewa-preview"
 
 [env.preview.vars]
 SITE_NAME = "VedaBotanica Research and Development [PREVIEW]"
+SITE_TAGLINE = "Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care."
+SITE_COPYRIGHT = "\u00a9 2025 VedaBotanica R&D [PREVIEW]. All rights reserved."
+CONTACT_EMAIL = "info@greenearth.com"
+CONTACT_PHONE = "+977-9800000000"
+ADDRESS_CITY = "Kathmandu"
+ADDRESS_PROVINCE = "Bagmati"
+ADDRESS_COUNTRY = "Nepal"
 DEFAULT_CURRENCY = "USD"
+EXCHANGE_RATE_TO_NPR = "133.50"
 
 # =============================================================================
 # Deployment Triggers (Reference)
@@ -58,12 +67,12 @@ DEFAULT_CURRENCY = "USD"
 # GitHub Actions Workflow: .github/workflows/deploy.yml
 # 
 # Trigger Matrix:
-# ┌─────────────────────┬──────────────────┬─────────────────┐
-# │ Event               │ Branch           │ Action          │
-# ├─────────────────────┼──────────────────┼─────────────────┤
-# │ push                │ main             │ Deploy Prod     │
-# │ pull_request        │ feature/*        │ Deploy Preview  │
-# │ workflow_dispatch   │ any              │ Manual Deploy   │
-# └─────────────────────┴──────────────────┴─────────────────┘
+# +---------------------+------------------+-----------------+
+# | Event               | Branch           | Action          |
+# +---------------------+------------------+-----------------+
+# | push                | main             | Deploy Prod     |
+# | pull_request        | feature/*        | Deploy Preview  |
+# | workflow_dispatch   | any              | Manual Deploy   |
+# +---------------------+------------------+-----------------+
 #
 # =============================================================================

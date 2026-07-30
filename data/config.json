@@ -1,13 +1,13 @@
 {
-  "siteName": "GreenEarth Organics",
-  "tagline": "Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care.",
-  "copyright": "© 2025 GreenEarth Organics. All rights reserved. Made with ❤️ for the planet",
+  "siteName": "",
+  "tagline": "",
+  "copyright": "",
   "contact": {
-    "email": "info@greenearth.com",
-    "phone": "+977-9800000000",
-    "city": "Kathmandu",
-    "province": "Bagmati",
-    "country": "Nepal"
+    "email": "",
+    "phone": "",
+    "city": "",
+    "province": "",
+    "country": ""
   },
   "currency": {
     "default": "USD",
