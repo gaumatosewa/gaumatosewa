@@ -19,6 +19,17 @@ pages_build_output_dir = "."  # Static site, no build step needed
 compatibility_date = "2024-01-01"
 
 # =============================================================================
+# D1 Database Binding (Blog comments, likes, views)
+# Setup: wrangler d1 create gaumatosewa-db
+# Then replace the database_id below with the one from the output.
+# Schema: wrangler d1 execute gaumatosewa-db --file=./schema.sql
+# =============================================================================
+[[d1_databases]]
+binding = "DB"
+database_name = "gaumatosewa-db"
+database_id = "PASTE_YOUR_DATABASE_ID_HERE"
+
+# =============================================================================
 # Production Environment Variables
 # Used when deploying to production (main branch)
 # =============================================================================

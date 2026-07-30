@@ -1,11 +1,24 @@
 /**
  * blog.js - Blog Section Renderer
  * Loads posts from data/blog.json, renders card grid,
- * handles modal view with comments, likes, and guest commenting.
+ * handles modal view with real comments, likes, and views via Cloudflare D1 API.
  */
 
 const Blog = {
     posts: [],
+    // Runtime state (not persisted — fetched fresh from API)
+    apiComments: {},   // { slug: [{id, name, text, date, likes}] }
+    apiLikes: {},      // { slug: { liked: bool, count: number } }
+    apiViews: {},      // { slug: number }
+
+    getVisitorId() {
+        let vid = localStorage.getItem('blog_visitor_id');
+        if (!vid) {
+            vid = crypto.randomUUID();
+            localStorage.setItem('blog_visitor_id', vid);
+        }
+        return vid;
+    },
 
     async load() {
         try {
@@ -17,48 +30,64 @@ const Blog = {
         } catch (e) {
             console.warn('Blog: Could not load blog.json');
         }
-        // Restore user likes/comments from localStorage
-        this.restoreUserData();
+
+        // Fetch live stats from API for all posts in parallel
+        await this.fetchAllStats();
     },
 
-    restoreUserData() {
-        try {
-            const stored = JSON.parse(localStorage.getItem('blog_user_data') || '{}');
-            this.userLikes = stored.likes || {};       // { slug: true }
-            this.userComments = stored.comments || {};  // { slug: [{name, text, date, likes}] }
-        } catch (e) {
-            this.userLikes = {};
-            this.userComments = {};
-        }
-    },
+    async fetchAllStats() {
+        const vid = this.getVisitorId();
+        const promises = this.posts.map(async (post) => {
+            const slug = post.slug;
+            // Fetch comments, likes, views in parallel per post
+            const [commentsRes, likesRes, viewsRes] = await Promise.allSettled([
+                fetch(`/api/blog/comment?slug=${slug}`).then(r => r.ok ? r.json() : {}),
+                fetch(`/api/blog/like?slug=${slug}&vid=${vid}`).then(r => r.ok ? r.json() : {}),
+                fetch(`/api/blog/views?slug=${slug}`).then(r => r.ok ? r.json() : {}),
+            ]);
 
-    saveUserData() {
-        try {
-            localStorage.setItem('blog_user_data', JSON.stringify({
-                likes: this.userLikes,
-                comments: this.userComments
-            }));
-        } catch (e) {}
+            if (commentsRes.status === 'fulfilled') this.apiComments[slug] = commentsRes.value.comments || [];
+            if (likesRes.status === 'fulfilled') this.apiLikes[slug] = { liked: likesRes.value.liked || false, count: likesRes.value.count || 0 };
+            if (viewsRes.status === 'fulfilled') this.apiViews[slug] = viewsRes.value.views || 0;
+        });
+        await Promise.all(promises);
     },
 
     getPost(slug) {
         return this.posts.find(p => p.slug === slug);
     },
 
-    getLikesCount(post) {
-        const base = post.likes || 0;
-        const userComments = (this.userComments[post.slug] || []).reduce((sum, c) => sum + (c.likes || 0), 0);
-        return base + userComments;
+    getTotalLikes(post) {
+        const staticLikes = post.likes || 0;
+        const apiCount = this.apiLikes[post.slug]?.count || 0;
+        return staticLikes + apiCount;
     },
 
-    getComments(post) {
-        const original = post.comments || [];
-        const userAdded = this.userComments[post.slug] || [];
-        return [...original, ...userAdded];
+    getAllComments(post) {
+        const staticComments = (post.comments || []).map(c => ({
+            ...c,
+            isStatic: true,
+        }));
+        const apiCmts = (this.apiComments[post.slug] || []).map(c => ({
+            name: c.name,
+            text: c.text,
+            date: c.date || c.created_at,
+            likes: c.likes || 0,
+            isStatic: false,
+            id: c.id,
+        }));
+        // Static first (sample), then newest API comments first
+        return [...apiCmts.reverse(), ...staticComments];
     },
 
-    getViews(post) {
-        return post.views || 0;
+    getTotalViews(post) {
+        const staticViews = post.views || 0;
+        const apiViews = this.apiViews[post.slug] || 0;
+        return staticViews + apiViews;
+    },
+
+    isLiked(post) {
+        return !!this.apiLikes[post.slug]?.liked;
     },
 
     getCategoryColor(category) {
@@ -95,6 +124,15 @@ const Blog = {
         return colors[Math.abs(hash) % colors.length];
     },
 
+    getCategoryIcon(category) {
+        const icons = { 'Gau Products': '🐄', 'Bio Fertilizers': '🧪', 'Herbs': '🌿' };
+        return icons[category] || '📄';
+    },
+
+    // ========================
+    // RENDER BLOG CARDS
+    // ========================
+
     renderBlogSection() {
         const container = document.getElementById('blogGrid');
         if (!container || this.posts.length === 0) return;
@@ -102,9 +140,10 @@ const Blog = {
         container.innerHTML = this.posts.map(post => {
             const catColor = this.getCategoryColor(post.category);
             const gradient = this.getCardGradient(post.color);
-            const totalLikes = this.getLikesCount(post);
-            const totalComments = this.getComments(post).length;
-            const isLiked = this.userLikes[post.slug];
+            const totalLikes = this.getTotalLikes(post);
+            const totalComments = this.getAllComments(post).length;
+            const totalViews = this.getTotalViews(post);
+            const liked = this.isLiked(post);
 
             return `
             <article class="group cursor-pointer bg-white rounded-2xl border border-emerald-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1" onclick="Blog.openModal('${post.slug}')">
@@ -133,16 +172,16 @@ const Blog = {
                         </div>
                         <div class="flex items-center gap-3 text-emerald-600/50 text-xs">
                             <span class="flex items-center gap-1" title="${totalLikes} likes">
-                                <svg class="w-3.5 h-3.5" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                <svg class="w-3.5 h-3.5" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                 ${totalLikes}
                             </span>
                             <span class="flex items-center gap-1" title="${totalComments} comments">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                 ${totalComments}
                             </span>
-                            <span class="flex items-center gap-1" title="${this.getViews(post)} views">
+                            <span class="flex items-center gap-1" title="${totalViews} views">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                ${this.getViews(post)}
+                                ${totalViews}
                             </span>
                         </div>
                     </div>
@@ -151,60 +190,55 @@ const Blog = {
         }).join('');
     },
 
-    getCategoryIcon(category) {
-        const icons = {
-            'Gau Products': '&#129692;',
-            'Bio Fertilizers': '&#129514;',
-            'Herbs': '&#127793;',
-        };
-        return icons[category] || '&#128196;';
-    },
+    // ========================
+    // MODAL
+    // ========================
 
-    openModal(slug) {
+    async openModal(slug) {
         const post = this.getPost(slug);
         if (!post) return;
 
-        // Increment view count in localStorage
-        const viewKey = 'blog_views_' + slug;
-        const viewed = sessionStorage.getItem(viewKey);
-        if (!viewed) {
-            sessionStorage.setItem(viewKey, '1');
-        }
+        const vid = this.getVisitorId();
+
+        // Record view (only once per visitor)
+        fetch('/api/blog/views', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug, vid }),
+        }).then(r => r.json()).then(data => {
+            this.apiViews[slug] = data.views || 0;
+            const viewEl = document.getElementById('viewCount_' + slug);
+            if (viewEl) viewEl.textContent = this.getTotalViews(post);
+        }).catch(() => {});
 
         const catColor = this.getCategoryColor(post.category);
         const gradient = this.getCardGradient(post.color);
-        const totalLikes = this.getLikesCount(post);
-        const isLiked = !!this.userLikes[post.slug];
-        const comments = this.getComments(post);
+        const totalLikes = this.getTotalLikes(post);
+        const liked = this.isLiked(post);
+        const comments = this.getAllComments(post);
+        const totalViews = this.getTotalViews(post);
 
         const modal = document.getElementById('blogModal');
         const content = document.getElementById('blogModalContent');
 
         content.innerHTML = `
         <div class="max-w-3xl mx-auto">
-            <!-- Header image -->
             <div class="relative h-52 sm:h-64 bg-gradient-to-br ${gradient} rounded-t-2xl flex items-center justify-center -mx-6 -mt-6 mb-6">
                 <span class="text-6xl text-white/80">${this.getCategoryIcon(post.category)}</span>
                 <button onclick="Blog.closeModal()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/40 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
                 </button>
             </div>
-
-            <!-- Meta -->
             <div class="flex flex-wrap items-center gap-3 mb-4">
                 <span class="px-3 py-1 rounded-full text-xs font-medium ${catColor.bg} ${catColor.text}">${post.category}</span>
                 <span class="text-xs text-emerald-600/50">${this.formatDate(post.date)}</span>
                 <span class="text-xs text-emerald-600/50">${post.readTime}</span>
                 <span class="text-xs text-emerald-600/50 flex items-center gap-1">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    ${this.getViews(post)} views
+                    <span id="viewCount_${slug}">${totalViews}</span> views
                 </span>
             </div>
-
-            <!-- Title -->
             <h2 class="text-2xl sm:text-3xl font-bold text-emerald-900 mb-3 leading-tight">${post.title}</h2>
-
-            <!-- Author + Like -->
             <div class="flex items-center justify-between mb-6 pb-6 border-b border-emerald-100">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full ${this.getAvatarColor(post.author.name)} flex items-center justify-center text-sm font-bold">${this.getInitials(post.author.name)}</div>
@@ -213,44 +247,35 @@ const Blog = {
                         <p class="text-xs text-emerald-600/50">${post.author.role}</p>
                     </div>
                 </div>
-                <button onclick="Blog.toggleLike('${post.slug}')" class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${isLiked ? 'bg-red-50 text-red-500 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100'}" id="likeBtn_${post.slug}">
-                    <svg class="w-4 h-4" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <button onclick="Blog.toggleLike('${post.slug}')" id="likeBtn_${post.slug}" class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${liked ? 'bg-red-50 text-red-500 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100'}">
+                    <svg class="w-4 h-4" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     <span id="likeCount_${post.slug}">${totalLikes}</span>
                 </button>
             </div>
-
-            <!-- Content -->
             <div class="prose prose-emerald max-w-none mb-8 text-emerald-900/80 leading-relaxed text-sm [&>p]:mb-4 [&>h3]:text-lg [&>h3]:font-bold [&>h3]:text-emerald-900 [&>h3]:mt-6 [&>h3]:mb-3 [&>em]:text-emerald-700">
                 ${post.content}
             </div>
-
-            <!-- Tags -->
             <div class="flex flex-wrap gap-2 mb-8 pb-6 border-b border-emerald-100">
                 ${post.tags.map(t => `<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-600 border border-emerald-100">#${t}</span>`).join('')}
             </div>
-
-            <!-- Comments Section -->
             <div>
                 <h3 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    Comments (${comments.length})
+                    Comments (<span id="commentCount_${slug}">${comments.length}</span>)
                 </h3>
-
                 <div id="commentsList_${post.slug}" class="space-y-4 mb-6 max-h-80 overflow-y-auto pr-1">
-                    ${this.renderComments(comments, post.slug)}
+                    ${this.renderComments(comments)}
                 </div>
-
-                <!-- Comment Form -->
                 <div class="bg-emerald-50/50 rounded-xl p-4 border border-emerald-100">
                     <h4 class="text-sm font-semibold text-emerald-900 mb-3">Leave a comment</h4>
                     <div class="flex gap-3 mb-3">
                         <input type="text" id="commentName_${post.slug}" placeholder="Your name" class="flex-1 px-3 py-2 border border-emerald-200 rounded-lg text-sm bg-white text-emerald-900 outline-none focus:border-emerald-500">
                     </div>
                     <textarea id="commentText_${post.slug}" rows="3" placeholder="Share your thoughts..." class="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm bg-white text-emerald-900 outline-none focus:border-emerald-500 resize-none mb-3"></textarea>
-                    <div class="flex justify-end">
-                        <button onclick="Blog.addComment('${post.slug}')" class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">Post Comment</button>
+                    <div class="flex justify-between items-center">
+                        <p id="commentError_${post.slug}" class="text-red-500 text-xs hidden"></p>
+                        <button onclick="Blog.addComment('${post.slug}')" id="commentSubmitBtn_${post.slug}" class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">Post Comment</button>
                     </div>
-                    <p id="commentError_${post.slug}" class="text-red-500 text-xs mt-2 hidden"></p>
                 </div>
             </div>
         </div>`;
@@ -260,7 +285,7 @@ const Blog = {
         document.body.style.overflow = 'hidden';
     },
 
-    renderComments(comments, slug) {
+    renderComments(comments) {
         if (comments.length === 0) {
             return '<p class="text-sm text-emerald-600/50 text-center py-4">No comments yet. Be the first to share your thoughts!</p>';
         }
@@ -269,102 +294,128 @@ const Blog = {
                 <div class="w-8 h-8 rounded-full ${this.getAvatarColor(c.name)} flex-shrink-0 flex items-center justify-center text-[10px] font-bold">${this.getInitials(c.name)}</div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="text-sm font-semibold text-emerald-900">${c.name}</span>
+                        <span class="text-sm font-semibold text-emerald-900">${this.escapeHtml(c.name)}</span>
                         <span class="text-[10px] text-emerald-600/40">${this.formatDate(c.date)}</span>
+                        ${c.isStatic ? '<span class="text-[10px] text-emerald-500/40 bg-emerald-50 px-1.5 py-0.5 rounded">sample</span>' : ''}
                     </div>
-                    <p class="text-sm text-emerald-900/70 leading-relaxed">${c.text}</p>
-                    ${c.likes !== undefined ? `
-                    <button onclick="Blog.likeComment('${slug}', ${i})" class="mt-1.5 flex items-center gap-1 text-xs text-emerald-600/40 hover:text-emerald-600 transition-colors" id="commentLike_${slug}_${i}">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"></path><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                        <span id="commentLikeCount_${slug}_${i}">${c.likes}</span>
-                    </button>` : ''}
+                    <p class="text-sm text-emerald-900/70 leading-relaxed">${this.escapeHtml(c.text)}</p>
                 </div>
             </div>
         `).join('');
     },
 
-    toggleLike(slug) {
-        if (this.userLikes[slug]) {
-            delete this.userLikes[slug];
-        } else {
-            this.userLikes[slug] = true;
-        }
-        this.saveUserData();
+    escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    },
+
+    // ========================
+    // LIKE (real API)
+    // ========================
+
+    async toggleLike(slug) {
+        const vid = this.getVisitorId();
+        try {
+            const res = await fetch('/api/blog/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug, vid }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                this.apiLikes[slug] = { liked: data.liked, count: (this.apiLikes[slug]?.count || 0) + (data.liked ? 1 : -1) };
+            }
+        } catch (e) {}
+
+        // Re-fetch accurate count
+        try {
+            const res = await fetch(`/api/blog/like?slug=${slug}&vid=${vid}`);
+            const data = await res.json();
+            if (res.ok) this.apiLikes[slug] = data;
+        } catch (e) {}
 
         const post = this.getPost(slug);
-        const isLiked = !!this.userLikes[slug];
-        const totalLikes = this.getLikesCount(post);
+        const liked = this.isLiked(post);
+        const totalLikes = this.getTotalLikes(post);
 
         const btn = document.getElementById('likeBtn_' + slug);
         const count = document.getElementById('likeCount_' + slug);
         if (btn && count) {
-            btn.className = `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${isLiked ? 'bg-red-50 text-red-500 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100'}`;
-            btn.querySelector('svg').setAttribute('fill', isLiked ? 'currentColor' : 'none');
+            btn.className = `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${liked ? 'bg-red-50 text-red-500 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100'}`;
+            btn.querySelector('svg').setAttribute('fill', liked ? 'currentColor' : 'none');
             count.textContent = totalLikes;
         }
 
-        // Also re-render card grid to update like icon
         this.renderBlogSection();
     },
 
-    likeComment(slug, commentIndex) {
-        if (!this.userComments[slug]) this.userComments[slug] = [];
-        // User-added comments are appended after original comments
-        // commentIndex here refers to the merged array
-        const post = this.getPost(slug);
-        const originalCount = (post.comments || []).length;
-        const key = document.getElementById('commentLikeCount_' + slug + '_' + commentIndex);
-        if (key) {
-            const current = parseInt(key.textContent) || 0;
-            key.textContent = current + 1;
-        }
-    },
+    // ========================
+    // COMMENT (real API)
+    // ========================
 
-    addComment(slug) {
+    async addComment(slug) {
         const nameInput = document.getElementById('commentName_' + slug);
         const textInput = document.getElementById('commentText_' + slug);
         const errorEl = document.getElementById('commentError_' + slug);
+        const btn = document.getElementById('commentSubmitBtn_' + slug);
 
         const name = (nameInput?.value || '').trim();
         const text = (textInput?.value || '').trim();
 
         if (!name || !text) {
-            if (errorEl) {
-                errorEl.textContent = 'Please enter your name and comment.';
-                errorEl.classList.remove('hidden');
-            }
+            if (errorEl) { errorEl.textContent = 'Please enter your name and comment.'; errorEl.classList.remove('hidden'); }
             return;
         }
 
         if (errorEl) errorEl.classList.add('hidden');
+        if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; btn.classList.add('opacity-50'); }
 
-        const newComment = {
-            name: name,
-            text: text,
-            date: new Date().toISOString().split('T')[0],
-            likes: 0
-        };
+        try {
+            const res = await fetch('/api/blog/comment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug, name, text }),
+            });
 
-        if (!this.userComments[slug]) this.userComments[slug] = [];
-        this.userComments[slug].push(newComment);
-        this.saveUserData();
+            const data = await res.json();
 
-        // Re-render comments list
-        const post = this.getPost(slug);
-        const allComments = this.getComments(post);
-        const listEl = document.getElementById('commentsList_' + slug);
-        if (listEl) {
-            listEl.innerHTML = this.renderComments(allComments, slug);
-            listEl.scrollTop = listEl.scrollHeight;
+            if (!res.ok) {
+                if (errorEl) { errorEl.textContent = data.error || 'Something went wrong.'; errorEl.classList.remove('hidden'); }
+                if (btn) { btn.disabled = false; btn.textContent = 'Post Comment'; btn.classList.remove('opacity-50'); }
+                return;
+            }
+
+            // Success — re-fetch comments from API
+            const commentsRes = await fetch(`/api/blog/comment?slug=${slug}`);
+            const commentsData = await commentsRes.json();
+            this.apiComments[slug] = commentsData.comments || [];
+
+            const post = this.getPost(slug);
+            const allComments = this.getAllComments(post);
+            const listEl = document.getElementById('commentsList_' + slug);
+            if (listEl) {
+                listEl.innerHTML = this.renderComments(allComments);
+                listEl.scrollTop = listEl.scrollHeight;
+            }
+
+            // Update comment count
+            const countEl = document.getElementById('commentCount_' + slug);
+            if (countEl) countEl.textContent = allComments.length;
+
+            nameInput.value = '';
+            textInput.value = '';
+            this.renderBlogSection();
+        } catch (e) {
+            if (errorEl) { errorEl.textContent = 'Network error. Please try again.'; errorEl.classList.remove('hidden'); }
         }
 
-        // Clear form
-        if (nameInput) nameInput.value = '';
-        if (textInput) textInput.value = '';
-
-        // Re-render card grid to update comment count
-        this.renderBlogSection();
+        if (btn) { btn.disabled = false; btn.textContent = 'Post Comment'; btn.classList.remove('opacity-50'); }
     },
+
+    // ========================
+    // CLOSE MODAL
+    // ========================
 
     closeModal() {
         const modal = document.getElementById('blogModal');
