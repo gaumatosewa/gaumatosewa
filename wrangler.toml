@@ -19,20 +19,17 @@ pages_build_output_dir = "."  # Static site, no build step needed
 compatibility_date = "2024-01-01"
 
 # =============================================================================
-# D1 Database Binding (Blog comments, likes, views)
-# Setup: wrangler d1 create gaumatosewa-db
-# Then replace the database_id below with the one from the output.
-# Schema: wrangler d1 execute gaumatosewa-db --file=./schema.sql
-# =============================================================================
+# D1 Database: blog-db (comments, likes, views)
 [[d1_databases]]
 binding = "DB"
 database_name = "blog-db"
-database_id = "eca2a75e-d2d2-4718-bb6d-2fca3be9528f"
+database_id = "PASTE_YOUR_BLOG_DB_ID_HERE"
 
+# D1 Database: users-db (accounts, sessions)
 [[d1_databases]]
-binding = "DB1"
+binding = "USERS_DB"
 database_name = "users-db"
-database_id = "eca2a75e-d2d2-4718-bb6d-2fca3be9528f"
+database_id = "PASTE_YOUR_USERS_DB_ID_HERE"
 
 # =============================================================================
 # Production Environment Variables
@@ -56,6 +53,9 @@ ADDRESS_COUNTRY = "Nepal"
 # Currency Settings
 DEFAULT_CURRENCY = "USD"
 EXCHANGE_RATE_TO_NPR = "133.50"
+
+# Admin: first signup or this email becomes admin
+ADMIN_EMAIL = "info@greenearth.com"
 
 # =============================================================================
 # Preview Environment (for pull requests)

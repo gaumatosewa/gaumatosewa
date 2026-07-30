@@ -1,113 +1,130 @@
 /**
  * /api/blog/comment
- * GET  ?slug=xxx          → List comments for a post
- * POST { slug, name, text } → Create a new comment
- * 
- * Rate limit: 1 comment per IP per minute
+ * GET  ?slug=xxx&vid=xxx  → List approved comments (threaded)
+ * POST { slug, text, parent_id? } → Create comment (auth required)
  */
 
 export async function onRequest(context) {
   const { request, env } = context;
   const db = env.DB;
+  const USERS = env.USERS_DB;
   const url = new URL(request.url);
 
-  // --- CORS preflight ---
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders() });
-  }
+  if (request.method === 'OPTIONS') return new Response(null, { headers: cors() });
 
   // --- GET: List comments ---
   if (request.method === 'GET') {
     const slug = url.searchParams.get('slug');
-    if (!slug) {
-      return json({ error: 'slug is required' }, 400);
-    }
+    const vid = url.searchParams.get('vid') || '';
+    if (!slug) return j({ error: 'slug required' }, 400);
 
-    const { results } = await db
-      .prepare(
-        'SELECT id, name, text, created_at as date, likes FROM comments WHERE post_slug = ? ORDER BY created_at DESC'
-      )
-      .bind(slug)
+    // Get auth user (for admin visibility + own comment highlighting)
+    let authUser = null;
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+    if (token) {
+      authUser = await USERS.prepare(
+        "SELECT u.id, u.username, u.is_admin FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.token = ? AND s.expires_at > datetime('now')"
+      ).bind(token).first();
+    }
+    const isAdmin = !!authUser?.is_admin;
+
+    // Fetch all comments for this post
+    const statusFilter = isAdmin ? "status IN ('approved','pending')" : "status = 'approved'";
+    const { results: comments } = await db
+      .prepare(`SELECT c.id, c.post_slug, c.user_id, c.text, c.parent_id, c.status, c.created_at,
+        u.username as author
+        FROM comments c LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.post_slug = ? AND ${statusFilter}
+        ORDER BY c.created_at ASC`)
+      .bind(slug).all();
+
+    // Fetch reaction counts per comment
+    const { results: reactions } = await db
+      .prepare('SELECT comment_id, reaction_type, COUNT(*) as cnt FROM comment_reactions GROUP BY comment_id, reaction_type')
       .all();
 
-    // Also get the static comments from blog.json (merged on frontend)
-    return json({ comments: results });
+    // Fetch current visitor's reactions
+    const { results: myReactions } = vid ? await db
+      .prepare('SELECT comment_id, reaction_type FROM comment_reactions WHERE visitor_id = ?').bind(vid).all() : { results: [] };
+
+    // Build lookup maps
+    const rMap = {}; // comment_id → { likes, dislikes }
+    for (const r of reactions) {
+      if (!rMap[r.comment_id]) rMap[r.comment_id] = { likes: 0, dislikes: 0 };
+      if (r.reaction_type === 'like') rMap[r.comment_id].likes = r.cnt;
+      else rMap[r.comment_id].dislikes = r.cnt;
+    }
+    const myMap = {}; // comment_id → reaction_type
+    for (const r of myReactions) myMap[r.comment_id] = r.reaction_type;
+
+    // Build flat list with reaction data
+    const flat = comments.map(c => ({
+      id: c.id, post_slug: c.post_slug, user_id: c.user_id,
+      author: c.author || 'Anonymous', text: c.text,
+      parent_id: c.parent_id, status: c.status,
+      date: c.created_at,
+      likes: rMap[c.id]?.likes || 0,
+      dislikes: rMap[c.id]?.dislikes || 0,
+      myReaction: myMap[c.id] || null,
+    }));
+
+    // Build tree
+    const tree = [];
+    const map = {};
+    for (const c of flat) {
+ c.children = [];
+      map[c.id] = c;
+      if (c.parent_id && map[c.parent_id]) map[c.parent_id].children.push(c);
+      else tree.push(c);
+    }
+
+    return j({ comments: tree });
   }
 
-  // --- POST: Create comment ---
+  // --- POST: Create comment (auth required) ---
   if (request.method === 'POST') {
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+    if (!token) return j({ error: 'Please log in to comment' }, 401);
+
+    const authRow = await USERS.prepare(
+      "SELECT u.id, u.username, u.is_admin FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.token = ? AND s.expires_at > datetime('now')"
+    ).bind(token).first();
+    if (!authRow) return j({ error: 'Session expired. Please log in again.' }, 401);
+
     try {
       const body = await request.json();
-      const { slug, name, text } = body;
+      const { slug, text, parent_id } = body;
+      if (!slug || !text) return j({ error: 'slug and text required' }, 400);
+      if (text.length > 2000) return j({ error: 'Comment max 2000 characters' }, 400);
 
-      if (!slug || !name || !text) {
-        return json({ error: 'slug, name, and text are required' }, 400);
-      }
-
-      if (name.length > 100 || text.length > 2000) {
-        return json({ error: 'Name max 100 chars, comment max 2000 chars' }, 400);
-      }
-
-      // Simple profanity / spam filter
-      const banned = ['http://', 'https://', '<script', 'buy now', 'click here', 'free money', 'casino', 'viagra', 'lottery'];
+      // Spam filter
       const lower = text.toLowerCase();
-      for (const word of banned) {
-        if (lower.includes(word)) {
-          return json({ error: 'Comment contains disallowed content.' }, 400);
-        }
-      }
+      const banned = ['http://', 'https://', '<script', 'buy now', 'click here', 'free money'];
+      for (const w of banned) { if (lower.includes(w)) return j({ error: 'Comment contains disallowed content' }, 400); }
 
-      // Rate limit: 1 comment per IP per minute
-      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-      const ipHash = await hashStr(ip + 'comment-salt');
+      const ip = request.headers.get('CF-Connecting-IP') || '';
+      const ipHash = await hashStr(ip + 'cmt');
 
-      const recent = await db
-        .prepare('SELECT id FROM comments WHERE ip_hash = ? AND created_at > datetime(\'now\', \'-1 minute\')')
-        .bind(ipHash)
-        .first();
+      // Admin comments are auto-approved
+      const status = authRow.is_admin ? 'approved' : 'pending';
 
-      if (recent) {
-        return json({ error: 'Please wait a minute before posting another comment.' }, 429);
-      }
+      const result = await db.prepare(
+        'INSERT INTO comments (post_slug, user_id, text, parent_id, status, ip_hash) VALUES (?, ?, ?, ?, ?, ?)'
+      ).bind(slug, authRow.id, text.replace(/[<>]/g, '').trim(), parent_id || null, status, ipHash).run();
 
-      const result = await db
-        .prepare('INSERT INTO comments (post_slug, name, text, ip_hash) VALUES (?, ?, ?, ?)')
-        .bind(slug, sanitize(name), sanitize(text), ipHash)
-        .run();
-
-      return json({ success: true, id: result.meta.last_row_id });
+      return j({ success: true, id: result.meta.last_row_id, status });
     } catch (e) {
-      return json({ error: 'Invalid request body' }, 400);
+      return j({ error: 'Invalid request' }, 400);
     }
   }
 
-  return json({ error: 'Method not allowed' }, 405);
+  return j({ error: 'Method not allowed' }, 405);
 }
 
-// --- Helpers ---
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders() },
-  });
-}
-
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-}
-
-function sanitize(str) {
-  return str.replace(/[<>]/g, '').trim();
-}
-
-async function hashStr(str) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+function j(d, s = 200) { return new Response(JSON.stringify(d), { status: s, headers: { 'Content-Type': 'application/json', ...cors() } }); }
+function cors() { return { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }; }
+async function hashStr(s) {
+  const d = new TextEncoder().encode(s);
+  const h = await crypto.subtle.digest('SHA-256', d);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
 }

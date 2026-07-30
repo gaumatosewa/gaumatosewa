@@ -1,19 +1,36 @@
 -- ==============================================
 -- Blog Database Schema for Cloudflare D1
--- Run: wrangler d1 execute gaumatosewa-db --file=./schema.sql
+-- Database name: blog-db
+-- DROP existing tables and recreate fresh.
+-- Run this in Cloudflare D1 Console for blog-db
 -- ==============================================
 
-CREATE TABLE IF NOT EXISTS comments (
+DROP TABLE IF EXISTS comment_reactions;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS post_likes;
+DROP TABLE IF EXISTS post_views;
+
+CREATE TABLE comments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   post_slug TEXT NOT NULL,
-  name TEXT NOT NULL,
+  user_id INTEGER,
   text TEXT NOT NULL,
+  parent_id INTEGER DEFAULT NULL,
+  status TEXT DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
   ip_hash TEXT,
-  created_at TEXT DEFAULT (datetime('now')),
-  likes INTEGER DEFAULT 0
+  created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS post_likes (
+CREATE TABLE comment_reactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  comment_id INTEGER NOT NULL,
+  visitor_id TEXT NOT NULL,
+  reaction_type TEXT NOT NULL CHECK(reaction_type IN ('like','dislike')),
+  created_at TEXT DEFAULT (datetime('now')),
+  UNIQUE(comment_id, visitor_id)
+);
+
+CREATE TABLE post_likes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   post_slug TEXT NOT NULL,
   visitor_id TEXT NOT NULL,
@@ -22,7 +39,7 @@ CREATE TABLE IF NOT EXISTS post_likes (
   UNIQUE(post_slug, visitor_id)
 );
 
-CREATE TABLE IF NOT EXISTS post_views (
+CREATE TABLE post_views (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   post_slug TEXT NOT NULL,
   visitor_id TEXT,
@@ -30,7 +47,8 @@ CREATE TABLE IF NOT EXISTS post_views (
   viewed_at TEXT DEFAULT (datetime('now'))
 );
 
--- Indexes for fast queries
-CREATE INDEX IF NOT EXISTS idx_comments_slug ON comments(post_slug, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_slug ON comments(post_slug, created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_comments_parent ON comments(parent_id);
+CREATE INDEX IF NOT EXISTS idx_reactions_comment ON comment_reactions(comment_id);
 CREATE INDEX IF NOT EXISTS idx_likes_slug ON post_likes(post_slug);
 CREATE INDEX IF NOT EXISTS idx_views_slug ON post_views(post_slug);

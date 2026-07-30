@@ -13,7 +13,8 @@
     // 3. Load product data
     await AppData.load();
 
-    // 3b. Load and render blog
+    // 3b. Init auth then load and render blog
+    await Auth.init();
     await Blog.load();
     Blog.renderBlogSection();
 
