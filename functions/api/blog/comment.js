@@ -7,7 +7,7 @@
 export async function onRequest(context) {
   const { request, env } = context;
   const db = env.DB;
-  const USERS = env.USERS_DB;
+  const USERS = env.DB1;
   const url = new URL(request.url);
 
   if (request.method === 'OPTIONS') return new Response(null, { headers: cors() });

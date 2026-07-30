@@ -1,6 +1,6 @@
 export async function onRequest(context) {
   const { request, env } = context;
-  const USERS = env.USERS_DB;
+  const USERS = env.DB1;
 
   if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders() });
   if (request.method !== 'POST') return j({ error: 'Method not allowed' }, 405);

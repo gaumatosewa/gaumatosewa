@@ -5,7 +5,7 @@ export async function onRequest(context) {
 
   const token = request.headers.get('Authorization')?.replace('Bearer ', '');
   if (token) {
-    await env.USERS_DB.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
+    await env.DB1.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
   }
   return j({ success: true });
 }

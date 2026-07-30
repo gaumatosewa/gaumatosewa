@@ -5,12 +5,12 @@ export async function onRequest(context) {
   const token = request.headers.get('Authorization')?.replace('Bearer ', '');
   if (!token) return j({ error: 'Not logged in' }, 401);
 
-  const row = await env.USERS_DB.prepare(
+  const row = await env.DB1.prepare(
     "SELECT u.id, u.username, u.display_name, u.is_admin FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.token = ? AND s.expires_at > datetime('now')"
   ).bind(token).first();
 
   if (!row) {
-    await env.USERS_DB.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
+    await env.DB1.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
     return j({ error: 'Session expired' }, 401);
   }
 
