@@ -19,18 +19,15 @@ pages_build_output_dir = "."  # Static site, no build step needed
 compatibility_date = "2024-01-01"
 
 # =============================================================================
-# D1 Database: blog-db (comments, likes, views)
 [[d1_databases]]
 binding = "DB"
 database_name = "blog-db"
-database_id = "PASTE_YOUR_BLOG_DB_ID_HERE"
+database_id = "eca2a75e-d2d2-4718-bb6d-2fca3be9528f"
 
-# D1 Database: users-db (accounts, sessions)
 [[d1_databases]]
-binding = "USERS_DB"
+binding = "DB1"
 database_name = "users-db"
-database_id = "PASTE_YOUR_USERS_DB_ID_HERE"
-
+database_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 # =============================================================================
 # Production Environment Variables
 # Used when deploying to production (main branch)
