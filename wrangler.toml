@@ -29,6 +29,11 @@ binding = "DB"
 database_name = "blog-db"
 database_id = "eca2a75e-d2d2-4718-bb6d-2fca3be9528f"
 
+[[d1_databases]]
+binding = "DB1"
+database_name = "users-db"
+database_id = "<your-users-db-id-here>"
+
 # =============================================================================
 # Production Environment Variables
 # Used when deploying to production (main branch)
