@@ -40,7 +40,7 @@ SITE_TAGLINE = "Your trusted source for premium organic gau products, bio-fertil
 SITE_COPYRIGHT = "\u00a9 2025 Trishanku Baba. All rights reserved. Made with \u2764\ufe0f for the planet"
 
 # Contact Information
-CONTACT_EMAIL = "info@greenearth.com"
+CONTACT_EMAIL = "gaumatosewa@gmail.com"
 CONTACT_PHONE = "+977-9800000000"
 
 # Location (Kathmandu, Nepal)
@@ -53,10 +53,11 @@ DEFAULT_CURRENCY = "USD"
 EXCHANGE_RATE_TO_NPR = "133.50"
 
 # Admin: first signup or this email becomes admin
-ADMIN_EMAIL = "info@greenearth.com"
+ADMIN_EMAIL = "gaumatosewa@gmail.com"
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "changeme123"
 
+BREVO_API = "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"
 # =============================================================================
 # Preview Environment (for pull requests)
 # Overrides production values for testing
@@ -68,7 +69,7 @@ name = "gaumatosewa-preview"
 SITE_NAME = "VedaBotanica Research and Development [PREVIEW]"
 SITE_TAGLINE = "Your trusted source for premium organic gau products, bio-fertilizers, and medicinal herbs. Sourced sustainably, delivered with care."
 SITE_COPYRIGHT = "\u00a9 2025 VedaBotanica R&D [PREVIEW]. All rights reserved."
-CONTACT_EMAIL = "info@greenearth.com"
+CONTACT_EMAIL = "gaumatosewa@gmail.com"
 CONTACT_PHONE = "+977-9800000000"
 ADDRESS_CITY = "Kathmandu"
 ADDRESS_PROVINCE = "Bagmati"
