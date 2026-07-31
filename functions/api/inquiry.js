@@ -62,7 +62,8 @@ export async function onRequestPost(context) {
             return new Response(
                 JSON.stringify({ 
                     success: false, 
-                    error: 'Email service not configured. Please contact administrator.' 
+                    error: 'Email service not configured. Please contact administrator.',
+                    debug: 'BREVO_API env var missing'
                 }),
                 { status: 500, headers: corsHeaders }
             );
@@ -76,18 +77,20 @@ export async function onRequestPost(context) {
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 30px; text-align: center; }
         .header h1 { margin: 0; font-size: 24px; }
-        .header p { margin: 10px 0 0; opacity: 0.9; }
-        .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px; }
+        .header p { margin: 10px 0 0; opacity: 0.9; font-size: 14px; }
+        .content { padding: 30px; }
         .field { margin-bottom: 20px; }
-        .field-label { font-weight: 600; color: #059669; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .field-value { background: #f9fafb; padding: 12px 16px; border-radius: 8px; margin-top: 6px; font-size: 15px; }
+        .field-label { font-weight: 600; color: #059669; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .field-value { background: #f9fafb; padding: 15px; border-radius: 8px; font-size: 15px; border-left: 3px solid #059669; }
         .message-field { background: #f0fdf4; border-left: 4px solid #059669; }
         .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 13px; }
-        .badge { display: inline-block; background: #dcfce7; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge { display: inline-block; background: #dcfce7; color: #065f46; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 20px; }
+        a { color: #059669; text-decoration: none; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -97,7 +100,7 @@ export async function onRequestPost(context) {
             <p>A new inquiry has been received from your website</p>
         </div>
         <div class="content">
-            <div style="text-align: center; margin-bottom: 25px;">
+            <div style="text-align: center;">
                 <span class="badge">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
             
@@ -108,7 +111,7 @@ export async function onRequestPost(context) {
             
             <div class="field">
                 <div class="field-label">📧 Email Address</div>
-                <div class="field-value"><a href="mailto:${escapeHtml(email)}" style="color: #059669;">${escapeHtml(email)}</a></div>
+                <div class="field-value"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></div>
             </div>
             
             ${phone ? `
@@ -160,7 +163,7 @@ ${message}
 Please respond to this inquiry at the customer's email address above.
 `.trim();
 
-        // Send email via Brevo API
+        // Send email via Brevo API - Using VERIFIED sender from Brevo account
         const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
             headers: {
@@ -171,7 +174,7 @@ Please respond to this inquiry at the customer's email address above.
             body: JSON.stringify({
                 sender: {
                     name: `${siteName} Website`,
-                    email: 'noreply@notifications.gaumatosewa.com'
+                    email: 'gaumatosewa@gmail.com' // MUST match verified sender in Brevo account
                 },
                 to: [{ email: toEmail, name: `${siteName} Team` }],
                 replyTo: { email: email, name: name },
@@ -188,20 +191,35 @@ Please respond to this inquiry at the customer's email address above.
         });
 
         const brevoData = await brevoResponse.json();
+        console.log('Brevo API Response:', JSON.stringify(brevoData));
 
         if (!brevoResponse.ok) {
-            console.error('Brevo API Error:', brevoData);
+            // Provide detailed error message for debugging
+            let errorMessage = 'Failed to send email.';
+            
+            if (brevoData.code === 'invalid_parameter' && brevoData.message?.includes('sender')) {
+                errorMessage = 'Email sender configuration issue. Please verify your Brevo sender domain.';
+            } else if (brevoData.code === 'unauthorized') {
+                errorMessage = 'Invalid API key. Check BREVO_API configuration.';
+            } else if (brevoData.code === 'too_many_requests') {
+                errorMessage = 'Too many requests. Please wait a moment and try again.';
+            } else if (brevoData.message) {
+                errorMessage += ` ${brevoData.message}`;
+            }
+
+            console.error('Brevo API Error:', JSON.stringify(brevoData));
             return new Response(
                 JSON.stringify({ 
                     success: false, 
-                    error: 'Failed to send email. Please try again later or contact us directly.',
-                    details: brevoData.message || 'Unknown error'
+                    error: errorMessage,
+                    details: brevoData.message || 'Unknown error',
+                    code: brevoData.code || 'UNKNOWN'
                 }),
                 { status: 502, headers: corsHeaders }
             );
         }
 
-        // Log successful submission (for analytics/debugging)
+        // Log successful submission
         console.log(`Inquiry sent successfully from ${email} - Message ID: ${brevoData.messageId}`);
 
         // Return success response
