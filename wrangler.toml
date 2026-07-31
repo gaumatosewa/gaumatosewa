@@ -57,7 +57,7 @@ ADMIN_EMAIL = "gaumatosewa@gmail.com"
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "changeme123"
 
-BREVO_API = ""
+
 # =============================================================================
 # Preview Environment (for pull requests)
 # Overrides production values for testing
